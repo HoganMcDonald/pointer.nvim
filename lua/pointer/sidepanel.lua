@@ -1,6 +1,10 @@
---- Pointer sidepanel module.
---- Provides functionality to create and manage a sidepanel in Neovim.
 local M = {}
+
+local theme = require 'pointer.ui.theme'
+local ui = require 'pointer.ui'
+local views = require 'pointer.ui.views'
+
+local root_component = nil
 
 --- Stores sidepanel state.
 --- @type table
@@ -69,8 +73,8 @@ local function setup_window_options(win)
   vim.api.nvim_win_set_option(win, 'wrap', false)
   vim.api.nvim_win_set_option(win, 'number', false)
   vim.api.nvim_win_set_option(win, 'relativenumber', false)
-  vim.api.nvim_win_set_option(win, 'numberwidth', 1)   -- Minimize number column width
-  vim.api.nvim_win_set_option(win, 'foldcolumn', '0')  -- No fold column
+  vim.api.nvim_win_set_option(win, 'numberwidth', 1) -- Minimize number column width
+  vim.api.nvim_win_set_option(win, 'foldcolumn', '0') -- No fold column
   vim.api.nvim_win_set_option(win, 'signcolumn', 'no')
   vim.api.nvim_win_set_option(win, 'winfixwidth', true) -- Keep width consistent
 
@@ -106,6 +110,14 @@ local function open_sidepanel()
   -- Set window options
   setup_window_options(win)
 
+  -- Make buffer modifiable temporarily for rendering
+  vim.api.nvim_buf_set_option(buf, 'modifiable', true)
+
+  -- Render UI components to the buffer
+  if root_component then
+    ui.render_component(root_component, buf)
+  end
+
   return win
 end
 
@@ -123,6 +135,22 @@ function M.toggle()
     close_sidepanel()
   else
     open_sidepanel()
+  end
+end
+
+--- Updates the sidepanel headers with new titles
+--- @param titles table Table with main_title, section1_title, and section2_title fields
+function M.update_headers(titles)
+  if not root_component then
+    return
+  end
+
+  -- Update the view's headers
+  views.update_titles(root_component, titles)
+
+  -- Re-render if the sidepanel is visible
+  if sidepanel.buffer_id and vim.api.nvim_buf_is_valid(sidepanel.buffer_id) then
+    ui.render_component(root_component, sidepanel.buffer_id)
   end
 end
 
@@ -145,6 +173,23 @@ function M.setup(opts)
 
   -- Create sidepanel highlights
   create_sidepanel_highlights()
+
+  -- Additional theme setup for UI components
+  theme.setup_highlights()
+  theme.setup_theme_autocmds()
+
+  -- Extract view options from main options
+  local view_opts = opts and opts.view or {}
+
+  -- Create root component with single header
+  root_component = views.create {
+    width = M.options.width,
+  }
+
+  -- Set up routes and default view
+  local routes = require 'pointer.ui.views.routes'
+  routes.register_views()
+  routes.setup_default_view()
 
   -- Create autocommand for maintaining width
   vim.api.nvim_create_autocmd('WinEnter', {
