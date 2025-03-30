@@ -69,6 +69,8 @@ local function setup_window_options(win)
   vim.api.nvim_win_set_option(win, 'wrap', false)
   vim.api.nvim_win_set_option(win, 'number', false)
   vim.api.nvim_win_set_option(win, 'relativenumber', false)
+  vim.api.nvim_win_set_option(win, 'numberwidth', 1)   -- Minimize number column width
+  vim.api.nvim_win_set_option(win, 'foldcolumn', '0')  -- No fold column
   vim.api.nvim_win_set_option(win, 'signcolumn', 'no')
   vim.api.nvim_win_set_option(win, 'winfixwidth', true) -- Keep width consistent
 
