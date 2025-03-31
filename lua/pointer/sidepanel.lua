@@ -31,6 +31,17 @@ local function create_buffer()
   vim.api.nvim_buf_set_option(buf, 'buftype', 'nofile')
   vim.api.nvim_buf_set_option(buf, 'swapfile', false)
   vim.api.nvim_buf_set_option(buf, 'modifiable', true)
+  
+  -- Disable all indentation and formatting
+  vim.api.nvim_buf_set_option(buf, 'autoindent', false)
+  vim.api.nvim_buf_set_option(buf, 'smartindent', false)
+  vim.api.nvim_buf_set_option(buf, 'cindent', false)
+  vim.api.nvim_buf_set_option(buf, 'expandtab', false)
+  vim.api.nvim_buf_set_option(buf, 'tabstop', 1)
+  vim.api.nvim_buf_set_option(buf, 'shiftwidth', 1)
+  vim.api.nvim_buf_set_option(buf, 'softtabstop', 0)
+  vim.api.nvim_buf_set_option(buf, 'indentexpr', '')
+  vim.api.nvim_buf_set_option(buf, 'indentkeys', '')
 
   -- Store the buffer id
   sidepanel.buffer_id = buf
@@ -70,13 +81,19 @@ end
 --- @param win number The window ID to configure
 local function setup_window_options(win)
   -- Set window options
-  vim.api.nvim_win_set_option(win, 'wrap', false)
-  vim.api.nvim_win_set_option(win, 'number', false)
-  vim.api.nvim_win_set_option(win, 'relativenumber', false)
+  vim.api.nvim_win_set_option(win, 'wrap', false) -- Disable text wrapping
+  vim.api.nvim_win_set_option(win, 'number', false) -- Disable line numbers
+  vim.api.nvim_win_set_option(win, 'relativenumber', false) -- Disable relative numbers
   vim.api.nvim_win_set_option(win, 'numberwidth', 1) -- Minimize number column width
   vim.api.nvim_win_set_option(win, 'foldcolumn', '0') -- No fold column
-  vim.api.nvim_win_set_option(win, 'signcolumn', 'no')
+  vim.api.nvim_win_set_option(win, 'signcolumn', 'no') -- No sign column
   vim.api.nvim_win_set_option(win, 'winfixwidth', true) -- Keep width consistent
+  vim.api.nvim_win_set_option(win, 'list', false) -- Disable list mode
+  vim.api.nvim_win_set_option(win, 'breakindent', false) -- Disable break indent
+  vim.api.nvim_win_set_option(win, 'breakindentopt', '') -- Clear break indent options
+  vim.api.nvim_win_set_option(win, 'showbreak', '') -- Clear show break
+  vim.api.nvim_win_set_option(win, 'conceallevel', 0) -- Show all text
+  vim.api.nvim_win_set_option(win, 'concealcursor', 'n') -- Show concealed text in normal mode
 
   -- Apply the custom highlighting
   vim.api.nvim_win_set_option(win, 'winhighlight', 'Normal:PointerSidepanel')

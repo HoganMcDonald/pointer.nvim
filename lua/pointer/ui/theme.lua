@@ -40,7 +40,7 @@ function M.setup_highlights()
   vim.api.nvim_set_hl(0, 'PointerUITitle', { link = accent_group, bold = true })
   vim.api.nvim_set_hl(0, 'PointerUILabel', { link = 'Label' })
   vim.api.nvim_set_hl(0, 'PointerUIText', { link = 'Normal' })
-  vim.api.nvim_set_hl(0, 'PointerUIBorder', { link = 'Comment' })
+  vim.api.nvim_set_hl(0, 'PointerUIBorder', { link = 'VertSplit' }) -- Use split line color
 end
 
 -- Update highlights when colorscheme changes
