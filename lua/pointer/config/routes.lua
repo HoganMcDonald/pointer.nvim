@@ -1,6 +1,6 @@
 local chat_view = require 'pointer.views.chat'
 local help_view = require 'pointer.views.help'
-local providers_view = require 'pointer.views.models'
+local providers_view = require 'pointer.views.providers'
 local router = require 'pointer.lib.router'
 
 local M = {}

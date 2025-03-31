@@ -40,9 +40,6 @@ function M.create(opts)
     table.insert(content, '  Enter - Send message')
     table.insert(content, '  / - Start command')
     table.insert(content, '')
-    table.insert(content, 'Model Configuration:')
-    table.insert(content, '  <Space> - Toggle model')
-    table.insert(content, '  i - Edit API key')
 
     return content
   end

@@ -1,10 +1,11 @@
 local base = require 'pointer.views.base'
 local header = require 'pointer.components.header'
+local button = require 'pointer.components.button'
 
 local M = {}
 
---- @param opts table Options for the models view
---- @return table The models view component
+--- @param opts table Options for the providers view
+--- @return table The providers view component
 function M.create(opts)
   local view = base.create(opts)
 
@@ -13,6 +14,18 @@ function M.create(opts)
     align = 'left',
     padding = 0,
     border = false,
+  }
+
+  local setup_button = button.create {
+    text = 'Setup Anthropic',
+    on_press = function()
+      -- TODO: Implement setup functionality
+    end,
+    style = {
+      padding = { left = 2, right = 2, top = 1, bottom = 1 },
+      border = true,
+      highlight = 'Normal',
+    }
   }
 
   -- Override the render function
@@ -25,33 +38,14 @@ function M.create(opts)
       table.insert(content, line)
     end
 
-    -- Anthropic section
-    table.insert(content, '')
-    table.insert(content, { text = 'Anthropic', hl_group = 'PointerUITitle' })
-    table.insert(content, '  • Claude 3 Opus')
-    table.insert(content, '  • Claude 3 Sonnet')
-    table.insert(content, '  • Claude 3 Haiku')
-    table.insert(content, '')
-    table.insert(content, '  [ ] Enable Anthropic')
-    table.insert(content, '  API Key: ********')
+    -- Add some spacing
     table.insert(content, '')
 
-    -- OpenAI section
-    table.insert(content, { text = 'OpenAI', hl_group = 'PointerUITitle' })
-    table.insert(content, '  • GPT-4 Turbo')
-    table.insert(content, '  • GPT-3.5 Turbo')
-    table.insert(content, '')
-    table.insert(content, '  [ ] Enable OpenAI')
-    table.insert(content, '  API Key: ********')
-    table.insert(content, '')
-
-    -- Add navigation hint
-    table.insert(content, '')
-    table.insert(content, 'Navigation:')
-    table.insert(content, '  j/k - Move up/down')
-    table.insert(content, '  <Space> - Toggle model')
-    table.insert(content, '  i - Edit API key')
-    table.insert(content, '  <Esc> - Return to chat')
+    -- Render the button
+    local button_content = setup_button.render(setup_button.props)
+    for _, line in ipairs(button_content) do
+      table.insert(content, line)
+    end
 
     return content
   end
