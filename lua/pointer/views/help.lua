@@ -1,5 +1,5 @@
-local base = require 'pointer.views.base'
-local header = require 'pointer.components.header'
+local base = require("pointer.views.base")
+local header = require("pointer.components.header")
 
 local M = {}
 
@@ -8,12 +8,12 @@ local M = {}
 function M.create(opts)
   local view = base.create(opts)
 
-  local help_header = header.create {
-    title = 'Help',
-    align = 'left',
+  local help_header = header.create({
+    title = "Help",
+    align = "left",
     padding = 0,
     border = false,
-  }
+  })
 
   -- Override the render function
   view.render = function(props, state)
@@ -26,20 +26,20 @@ function M.create(opts)
     end
 
     -- Add help content
-    table.insert(content, '')
-    table.insert(content, 'Keybindings:')
-    table.insert(content, '  ? - Show this help screen')
-    table.insert(content, '  P - Configure AI models')
-    table.insert(content, '  Esc - Close help/model config')
-    table.insert(content, '')
-    table.insert(content, 'Navigation:')
-    table.insert(content, '  j/k - Move up/down')
-    table.insert(content, '  gg/G - Move to top/bottom')
-    table.insert(content, '')
-    table.insert(content, 'Chat:')
-    table.insert(content, '  Enter - Send message')
-    table.insert(content, '  / - Start command')
-    table.insert(content, '')
+    table.insert(content, "")
+    table.insert(content, "Keybindings:")
+    table.insert(content, "  ? - Show this help screen")
+    table.insert(content, "  P - Configure AI models")
+    table.insert(content, "  Esc - Close help/model config")
+    table.insert(content, "")
+    table.insert(content, "Navigation:")
+    table.insert(content, "  j/k - Move up/down")
+    table.insert(content, "  gg/G - Move to top/bottom")
+    table.insert(content, "")
+    table.insert(content, "Chat:")
+    table.insert(content, "  Enter - Send message")
+    table.insert(content, "  / - Start command")
+    table.insert(content, "")
 
     return content
   end
@@ -47,4 +47,4 @@ function M.create(opts)
   return view
 end
 
-return M 
+return M

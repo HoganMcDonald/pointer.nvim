@@ -1,7 +1,7 @@
 --- Main view for the pointer sidepanel
-local header = require 'pointer.components.header'
-local router = require 'pointer.lib.router'
-local ui = require 'pointer.ui'
+local header = require("pointer.components.header")
+local router = require("pointer.lib.router")
+local ui = require("pointer.ui")
 
 local M = {}
 
@@ -15,12 +15,12 @@ function M.create(opts)
   local view = ui.create_component(opts)
 
   -- Create a single header component
-  local main_header = header.create {
-    title = 'Pointer.nvim',
-    align = 'center',
+  local main_header = header.create({
+    title = "Pointer.nvim",
+    align = "center",
     padding = 0,
     border = true,
-  }
+  })
 
   -- Store child components so they can be accessed later
   view.children = {
@@ -44,7 +44,8 @@ function M.create(opts)
     -- Render the current view if one is active
     local current_view = router.get_current_view()
     if current_view then
-      local view_content = current_view.component.render(current_view.props, current_view.component.state)
+      local view_content =
+        current_view.component.render(current_view.props, current_view.component.state)
       for _, line in ipairs(view_content) do
         table.insert(content, line)
       end

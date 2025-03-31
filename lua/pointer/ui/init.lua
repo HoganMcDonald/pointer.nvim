@@ -7,7 +7,7 @@ local next_component_id = 1
 local state = {}
 
 -- UI buffer namespace for highlights
-local ns_id = vim.api.nvim_create_namespace 'pointer_ui'
+local ns_id = vim.api.nvim_create_namespace("pointer_ui")
 
 --- Generate a unique component ID
 --- @return number Component ID
@@ -21,12 +21,10 @@ end
 --- @param bufnr number Buffer to render to
 --- @param content table Array of content lines with optional highlight information
 local function render_to_buffer(bufnr, content)
-  if not vim.api.nvim_buf_is_valid(bufnr) then
-    return
-  end
+  if not vim.api.nvim_buf_is_valid(bufnr) then return end
 
   -- Make buffer modifiable
-  vim.api.nvim_set_option_value('modifiable', true, { buf = bufnr })
+  vim.api.nvim_set_option_value("modifiable", true, { buf = bufnr })
 
   -- Clear existing content and highlights
   vim.api.nvim_buf_clear_namespace(bufnr, ns_id, 0, -1)
@@ -34,12 +32,12 @@ local function render_to_buffer(bufnr, content)
   -- Convert content to plain lines
   local lines = {}
   for i, line in ipairs(content) do
-    if type(line) == 'string' then
+    if type(line) == "string" then
       lines[i] = line
-    elseif type(line) == 'table' and line.text then
+    elseif type(line) == "table" and line.text then
       lines[i] = line.text
     else
-      lines[i] = ''
+      lines[i] = ""
     end
   end
 
@@ -48,7 +46,7 @@ local function render_to_buffer(bufnr, content)
 
   -- Apply highlights
   for i, line in ipairs(content) do
-    if type(line) == 'table' and line.text and line.hl_group then
+    if type(line) == "table" and line.text and line.hl_group then
       vim.api.nvim_buf_add_highlight(
         bufnr,
         ns_id,
@@ -61,7 +59,7 @@ local function render_to_buffer(bufnr, content)
   end
 
   -- Make buffer non-modifiable again
-  vim.api.nvim_set_option_value('modifiable', false, { buf = bufnr })
+  vim.api.nvim_set_option_value("modifiable", false, { buf = bufnr })
 end
 
 --- Create component
@@ -84,17 +82,13 @@ end
 --- @param component table Component to render
 --- @param bufnr number|nil Buffer to render to (optional)
 function M.render_component(component, bufnr)
-  if not component.render then
-    return
-  end
+  if not component.render then return end
 
   if not bufnr and components[component.id] and components[component.id].bufnr then
     bufnr = components[component.id].bufnr
   end
 
-  if not bufnr or not vim.api.nvim_buf_is_valid(bufnr) then
-    return
-  end
+  if not bufnr or not vim.api.nvim_buf_is_valid(bufnr) then return end
 
   -- Store component reference
   components[component.id] = {
@@ -113,9 +107,7 @@ end
 --- @param key string|nil State key to retrieve (optional, returns all state if nil)
 --- @return any State value
 function M.get_state(key)
-  if key then
-    return state[key]
-  end
+  if key then return state[key] end
   return state
 end
 
@@ -123,17 +115,15 @@ end
 --- @param key string|table State key or table of key-value pairs
 --- @param value any|nil Value to set (if key is string)
 function M.set_state(key, value)
-  if type(key) == 'table' then
-    state = vim.tbl_deep_extend('force', state, key)
+  if type(key) == "table" then
+    state = vim.tbl_deep_extend("force", state, key)
   else
     state[key] = value
   end
 
   -- Re-render all components
   for _, comp in pairs(components) do
-    if comp.component and comp.bufnr then
-      M.render_component(comp.component, comp.bufnr)
-    end
+    if comp.component and comp.bufnr then M.render_component(comp.component, comp.bufnr) end
   end
 end
 

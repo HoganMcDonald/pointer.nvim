@@ -1,6 +1,6 @@
-local base = require 'pointer.views.base'
-local header = require 'pointer.components.header'
-local button = require 'pointer.components.button'
+local base = require("pointer.views.base")
+local header = require("pointer.components.header")
+local button = require("pointer.components.button")
 
 local M = {}
 
@@ -9,24 +9,24 @@ local M = {}
 function M.create(opts)
   local view = base.create(opts)
 
-  local models_header = header.create {
-    title = 'Providers',
-    align = 'left',
+  local models_header = header.create({
+    title = "Providers",
+    align = "left",
     padding = 0,
     border = false,
-  }
+  })
 
-  local setup_button = button.create {
-    text = 'Setup Anthropic',
+  local setup_button = button.create({
+    text = "Setup Anthropic",
     on_press = function()
       -- TODO: Implement setup functionality
     end,
     style = {
       padding = { left = 2, right = 2, top = 1, bottom = 1 },
       border = true,
-      highlight = 'Normal',
-    }
-  }
+      highlight = "Normal",
+    },
+  })
 
   -- Override the render function
   view.render = function(props, state)
@@ -39,7 +39,7 @@ function M.create(opts)
     end
 
     -- Add some spacing
-    table.insert(content, '')
+    table.insert(content, "")
 
     -- Render the button
     local button_content = setup_button.render(setup_button.props)
@@ -53,4 +53,4 @@ function M.create(opts)
   return view
 end
 
-return M 
+return M

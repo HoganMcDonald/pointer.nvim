@@ -1,4 +1,4 @@
-local ui = require 'pointer.ui'
+local ui = require("pointer.ui")
 
 local M = {}
 
@@ -11,9 +11,7 @@ function M.create(opts)
   local view = ui.create_component(opts)
 
   -- Default render function that can be overridden
-  view.render = function(props, state)
-    return {}
-  end
+  view.render = function(props, state) return {} end
 
   -- Default mount function that can be overridden
   view.mount = function(props, state)

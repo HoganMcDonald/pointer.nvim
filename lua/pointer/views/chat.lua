@@ -1,6 +1,6 @@
-local base = require 'pointer.views.base'
+local base = require("pointer.views.base")
 
-local header = require 'pointer.components.header'
+local header = require("pointer.components.header")
 
 local M = {}
 
@@ -9,12 +9,12 @@ local M = {}
 function M.create(opts)
   local view = base.create(opts)
 
-  local chat_header = header.create {
-    title = 'Chat',
-    align = 'left',
+  local chat_header = header.create({
+    title = "Chat",
+    align = "left",
     padding = 0,
     border = false,
-  }
+  })
 
   -- Override the render function
   view.render = function(props, state)
@@ -27,10 +27,10 @@ function M.create(opts)
     end
 
     -- Add chat content
-    table.insert(content, '')
-    table.insert(content, '  • Welcome to the chat!')
-    table.insert(content, '  • This is an example view')
-    table.insert(content, '')
+    table.insert(content, "")
+    table.insert(content, "  • Welcome to the chat!")
+    table.insert(content, "  • This is an example view")
+    table.insert(content, "")
 
     return content
   end
