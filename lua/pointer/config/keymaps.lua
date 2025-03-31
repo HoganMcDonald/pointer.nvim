@@ -20,10 +20,19 @@ function M.setup(buf)
     silent = true,
   })
 
+  -- Models view keybindings
+  vim.api.nvim_buf_set_keymap(buf, 'n', 'P', '', {
+    callback = function()
+      router.navigate('models')
+    end,
+    noremap = true,
+    silent = true,
+  })
+
   vim.api.nvim_buf_set_keymap(buf, 'n', '<Esc>', '', {
     callback = function()
       local current_view = router.get_current_view()
-      if current_view and current_view.name == 'help' then
+      if current_view and (current_view.name == 'help' or current_view.name == 'models') then
         router.navigate('chat')
       end
     end,
