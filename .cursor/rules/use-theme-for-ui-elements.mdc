@@ -1,0 +1,156 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Styling UI Components
+
+This document explains how to style UI components in pointer.nvim using the theme system.
+
+## Overview
+
+All UIs should use colors from the user's theme rather than hardcoded colors. This ensures the plugin looks consistent with the user's chosen colorscheme and provides a better user experience.
+
+## Theme System
+
+The theme system is implemented in `lua/pointer/ui/theme.lua` and provides:
+
+1. **Highlight Groups**: Pre-defined highlight groups for different UI elements
+2. **Theme Detection**: Automatic detection of accent colors from the user's theme
+3. **Theme Updates**: Automatic updates when the colorscheme changes
+
+## Available Highlight Groups
+
+The theme system provides these highlight groups:
+
+```lua
+'PointerUIHeader'  -- For header text
+'PointerUITitle'   -- For titles (bold)
+'PointerUILabel'   -- For labels
+'PointerUIText'    -- For regular text
+'PointerUIBorder'  -- For borders and separators
+```
+
+## Usage in Components
+
+### Basic Usage
+
+```lua
+-- Instead of hardcoding colors:
+table.insert(result, 'Some text')  -- ❌ Don't do this
+
+-- Use highlight groups:
+table.insert(result, {
+  text = 'Some text',
+  hl_group = 'PointerUITitle'  -- ✅ Do this
+})
+```
+
+### Component Example
+
+Here's how to properly style a component:
+
+```lua
+local M = {}
+
+function M.create(props)
+  local component = ui.create_component(props, {})
+
+  component.render = function(render_props)
+    local result = {}
+    
+    -- Title with proper highlight
+    table.insert(result, {
+      text = render_props.title,
+      hl_group = 'PointerUITitle'
+    })
+    
+    -- Regular text
+    table.insert(result, {
+      text = render_props.description,
+      hl_group = 'PointerUIText'
+    })
+    
+    -- Border
+    table.insert(result, {
+      text = string.rep('─', width),
+      hl_group = 'PointerUIBorder'
+    })
+    
+    return result
+  end
+
+  return component
+end
+```
+
+## Best Practices
+
+1. **Never Hardcode Colors**
+   ```lua
+   -- ❌ Don't do this
+   text = 'Some text',
+   fg = '#FF0000',
+   
+   -- ✅ Do this
+   text = 'Some text',
+   hl_group = 'PointerUITitle',
+   ```
+
+2. **Use Semantic Highlight Groups**
+   - Use `PointerUITitle` for headings and important text
+   - Use `PointerUIText` for regular content
+   - Use `PointerUILabel` for form labels and metadata
+   - Use `PointerUIBorder` for separators and borders
+
+3. **Theme Changes**
+   - Components automatically update when the theme changes
+   - No additional code needed to handle theme changes
+   - Test components with different themes to ensure consistency
+
+4. **Accessibility**
+   - Use appropriate contrast ratios
+   - Don't rely solely on color to convey information
+   - Consider colorblind-friendly themes
+
+## Common Patterns
+
+### Headers
+```lua
+table.insert(result, {
+  text = 'Section Title',
+  hl_group = 'PointerUITitle'
+})
+```
+
+### Borders
+```lua
+table.insert(result, {
+  text = string.rep('─', width),
+  hl_group = 'PointerUIBorder'
+})
+```
+
+### Labels
+```lua
+table.insert(result, {
+  text = 'Status:',
+  hl_group = 'PointerUILabel'
+})
+```
+
+## Testing
+
+When testing components:
+1. Try different colorschemes
+2. Check contrast ratios
+3. Verify theme changes are handled correctly
+4. Ensure no hardcoded colors are present
+
+## Adding New Highlight Groups
+
+If you need a new highlight group:
+1. Add it to `theme.lua`
+2. Link it to an appropriate existing highlight
+3. Document its purpose
+4. Update this guide

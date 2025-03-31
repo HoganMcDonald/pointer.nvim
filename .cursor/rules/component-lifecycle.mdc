@@ -1,0 +1,242 @@
+# Component Lifecycle and Structure
+
+This document outlines the component lifecycle and structure in pointer.nvim.
+
+## Overview
+
+Components in pointer.nvim follow a lifecycle pattern similar to React components, with clear initialization, mounting, updating, and unmounting phases. Each component should be self-contained and follow a consistent structure.
+
+## Component Structure
+
+### Basic Component Template
+
+```lua
+local M = {}
+
+--- @class ComponentProps
+--- @field prop1 string Description of prop1
+--- @field prop2? number Optional prop2
+
+--- @class ComponentState
+--- @field value string Current value
+--- @field loading boolean Loading state
+
+--- Create a new component
+--- @param props ComponentProps Component properties
+--- @return table Component
+function M.create(props)
+  local component = ui.create_component(props, {
+    -- Initial state
+    value = '',
+    loading = false
+  })
+
+  -- Lifecycle methods
+  component.mount = function(render_props, state)
+    -- Called when component is mounted
+  end
+
+  component.unmount = function(render_props, state)
+    -- Called when component is unmounted
+  end
+
+  component.update = function(render_props, state)
+    -- Called when props or state change
+  end
+
+  -- Render method
+  component.render = function(render_props, state)
+    local result = {}
+    -- Render logic here
+    return result
+  end
+
+  return component
+end
+
+return M
+```
+
+## Lifecycle Methods
+
+### Mount
+```lua
+component.mount = function(props, state)
+  -- Initialize resources
+  -- Set up event listeners
+  -- Start background tasks
+  -- Load initial data
+end
+```
+
+### Unmount
+```lua
+component.unmount = function(props, state)
+  -- Clean up resources
+  -- Remove event listeners
+  -- Cancel background tasks
+  -- Save state if needed
+end
+```
+
+### Update
+```lua
+component.update = function(props, state)
+  -- Handle prop changes
+  -- Update derived state
+  -- Trigger side effects
+end
+```
+
+### Render
+```lua
+component.render = function(props, state)
+  local result = {}
+  
+  -- Build UI elements
+  -- Handle conditional rendering
+  -- Apply styling
+  -- Return content lines
+  
+  return result
+end
+```
+
+## Best Practices
+
+1. **Component Creation**
+   ```lua
+   -- ❌ Don't do this
+   function M.create()
+     return {
+       render = function() return {} end
+     }
+   end
+
+   -- ✅ Do this
+   function M.create(props)
+     local component = ui.create_component(props, {
+       -- Initial state
+     })
+     
+     -- Lifecycle methods
+     component.mount = function() end
+     component.unmount = function() end
+     component.update = function() end
+     component.render = function() return {} end
+     
+     return component
+   end
+   ```
+
+2. **State Management**
+   ```lua
+   -- ❌ Don't do this
+   component.state = { value = 'new' }
+
+   -- ✅ Do this
+   component.update = function(props, state)
+     state.value = 'new'
+   end
+   ```
+
+3. **Resource Cleanup**
+   ```lua
+   -- ❌ Don't do this
+   component.mount = function()
+     local timer = vim.loop.new_timer()
+     timer:start(1000, 1000, function()
+       -- Do something
+     end)
+   end
+
+   -- ✅ Do this
+   component.mount = function(props, state)
+     state.timer = vim.loop.new_timer()
+     state.timer:start(1000, 1000, function()
+       -- Do something
+     end)
+   end
+
+   component.unmount = function(props, state)
+     if state.timer then
+       state.timer:stop()
+       state.timer:close()
+     end
+   end
+   ```
+
+4. **Props Handling**
+   ```lua
+   -- ❌ Don't do this
+   component.render = function()
+     return { text = props.title }
+   end
+
+   -- ✅ Do this
+   component.render = function(render_props, state)
+     return {
+       text = render_props.title or 'Default Title'
+     }
+   end
+   ```
+
+## Common Patterns
+
+### Event Handling
+```lua
+component.mount = function(props, state)
+  state.keymap = vim.keymap.set('n', '<CR>', function()
+    component.handle_select()
+  end, { buffer = true })
+end
+
+component.unmount = function(props, state)
+  if state.keymap then
+    vim.keymap.del('n', '<CR>', { buffer = true })
+  end
+end
+```
+
+### Async Operations
+```lua
+component.mount = function(props, state)
+  state.loading = true
+  vim.schedule(function()
+    local result = some_async_operation()
+    state.loading = false
+    state.data = result
+  end)
+end
+```
+
+### Child Components
+```lua
+component.render = function(props, state)
+  local result = {}
+  
+  -- Render child components
+  local child = child_component.create(props.child_props)
+  local child_content = child.render(child.props, child.state)
+  vim.list_extend(result, child_content)
+  
+  return result
+end
+```
+
+## Testing
+
+When testing components:
+1. Test each lifecycle method
+2. Verify state updates
+3. Check resource cleanup
+4. Test prop changes
+5. Validate render output
+
+## IDE Support
+
+To get the best IDE support:
+1. Use complete type annotations
+2. Document all lifecycle methods
+3. Define prop and state interfaces
+4. Use type guards for state updates 

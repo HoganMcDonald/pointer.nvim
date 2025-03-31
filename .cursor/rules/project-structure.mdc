@@ -1,0 +1,57 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Project Structure
+
+This document outlines the directory structure and purpose of each folder in the pointer.nvim project.
+
+## Root Directory Structure
+
+```
+pointer.nvim/
+├── .cursor/           # Cursor IDE configuration and rules
+├── lua/               # Main Lua source code directory
+│   └── pointer/       # Plugin namespace
+│       ├── app.lua    # Main application entry point
+│       ├── init.lua   # Plugin initialization
+│       ├── components/# UI components
+│       ├── config/    # Configuration management
+│       ├── lib/       # Utility functions and shared libraries
+│       ├── ui/        # UI-related code and theme management
+│       └── views/     # The equivelent of Pages. Files in here are UI components that get rendered by a router.
+└── .stylua.toml      # Stylua configuration for code formatting
+```
+
+## Directory Purposes
+
+### `.cursor/`
+Contains Cursor IDE-specific configuration files and rules that guide development practices.
+
+### `lua/pointer/`
+The main plugin namespace containing all the source code.
+
+- **app.lua**: The main application entry point that initializes and coordinates the plugin's functionality.
+- **init.lua**: Plugin initialization file that sets up the plugin when Neovim loads.
+- **auth/**: Handles authentication-related functionality, including API key management and authentication flows.
+- **components/**: Contains reusable UI components that can be used across different views.
+- **config/**: Manages plugin configuration, including user settings and default values.
+- **lib/**: Contains utility functions and shared libraries used throughout the plugin.
+- **ui/**: Contains UI-related code, including theme management and styling utilities.
+- **views/**: Contains view components and layouts that define the plugin's user interface.
+
+## File Naming Conventions
+
+- All Lua files should use snake_case naming
+- Component files should be named descriptively of their purpose
+- Test files should be named with a `.test.lua` suffix
+- Configuration files should use `.toml` extension
+
+## Code Organization Guidelines
+
+1. Each component should be self-contained in its own file
+2. Shared utilities should be placed in the `lib/` directory
+3. UI-related code should be separated from business logic
+4. Configuration should be centralized in the `config/` directory
+5. Authentication logic should be isolated in the `auth/` directory

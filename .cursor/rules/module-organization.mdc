@@ -1,0 +1,196 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+ # Module Organization and Type Safety
+
+This document outlines the preferred approach for organizing modules and enforcing type safety in pointer.nvim.
+
+## Overview
+
+All modules should be strictly typed and well-documented using LuaDoc annotations. This helps catch errors early, improves code maintainability, and provides better IDE support.
+
+## Module Structure
+
+### Basic Module Template
+
+```lua
+local M = {}
+
+--- @class ModuleName
+--- @field field1 string Description of field1
+--- @field field2 number Description of field2
+--- @field field3? boolean Optional field3
+
+--- @generic T
+--- @param value T
+--- @return T
+function M.process(value)
+  return value
+end
+
+return M
+```
+
+### Type Definitions
+
+#### Enums
+```lua
+--- @alias Alignment 'left' | 'center' | 'right'
+
+--- @class ComponentProps
+--- @field align Alignment Text alignment
+```
+
+#### Generics
+```lua
+--- @generic T
+--- @class Container<T>
+--- @field value T The contained value
+
+--- @generic T
+--- @param items T[]
+--- @return T
+function M.first(items)
+  return items[1]
+end
+```
+
+#### Union Types
+```lua
+--- @alias Result<T> { success: true, value: T } | { success: false, error: string }
+```
+
+## Best Practices
+
+1. **Type Definitions**
+   - Define types at the top of the module
+   - Use descriptive names for types
+   - Document all type parameters
+   - Use enums for fixed sets of values
+
+2. **Function Documentation**
+   ```lua
+   --- Process a list of items
+   --- @generic T
+   --- @param items T[] List of items to process
+   --- @param options? { filter: fun(item: T): boolean }
+   --- @return T[] Processed items
+   function M.process_items(items, options)
+   ```
+
+3. **Class Definitions**
+   ```lua
+   --- @class Component
+   --- @field props ComponentProps Component properties
+   --- @field state? ComponentState Optional component state
+   --- @field render fun(self: Component): string[]
+   ```
+
+4. **Optional Fields**
+   ```lua
+   --- @class Props
+   --- @field required string Required field
+   --- @field optional? number Optional field
+   ```
+
+5. **Type Guards**
+   ```lua
+   --- @typeguard
+   --- @param value unknown
+   --- @return value is string
+   function M.is_string(value)
+     return type(value) == 'string'
+   end
+   ```
+
+## Common Patterns
+
+### Component Props
+```lua
+--- @class ComponentProps
+--- @field title string Component title
+--- @field align? Alignment Text alignment (default: 'left')
+--- @field padding? number Padding size (default: 0)
+--- @field border? boolean Show border (default: true)
+```
+
+### API Responses
+```lua
+--- @class ApiResponse<T>
+--- @field data T Response data
+--- @field status number HTTP status code
+--- @field message? string Optional message
+```
+
+### State Management
+```lua
+--- @class State<T>
+--- @field value T Current value
+--- @field history T[] Value history
+--- @field subscribers fun(value: T)[] State change subscribers
+```
+
+## Testing
+
+When testing typed modules:
+1. Verify type annotations are correct
+2. Test edge cases with different types
+3. Ensure generic constraints are satisfied
+4. Check enum values are valid
+
+## IDE Support
+
+To get the best IDE support:
+1. Use complete type annotations
+2. Document all parameters and return values
+3. Use generics where appropriate
+4. Define interfaces for complex types
+
+## Common Pitfalls
+
+1. **Missing Type Annotations**
+   ```lua
+   -- ❌ Don't do this
+   function M.process(value)
+     return value
+   end
+
+   -- ✅ Do this
+   --- @generic T
+   --- @param value T
+   --- @return T
+   function M.process(value)
+     return value
+   end
+   ```
+
+2. **Incomplete Documentation**
+   ```lua
+   -- ❌ Don't do this
+   --- @param props table
+
+   -- ✅ Do this
+   --- @param props ComponentProps
+   ```
+
+3. **Unsafe Type Assertions**
+   ```lua
+   -- ❌ Don't do this
+   local value = some_value as string
+
+   -- ✅ Do this
+   if type(some_value) == 'string' then
+     local value = some_value
+   end
+   ```
+
+## Adding New Types
+
+When adding new types:
+1. Define them at the top of the module
+2. Document all fields and their types
+3. Use appropriate type constraints
+4. Update related type definitions
+5. Add type tests if necessary

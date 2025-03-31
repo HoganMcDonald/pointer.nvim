@@ -1,0 +1,201 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Error Handling and Result Types
+
+This document outlines the preferred approach for handling errors and using result types in pointer.nvim.
+
+## Overview
+
+All functions that can fail should return a Result type instead of throwing errors. This makes error handling explicit and allows for better error recovery.
+
+## Result Type Pattern
+
+```lua
+--- @alias Result<T> { success: true, value: T } | { success: false, error: string }
+
+--- @generic T
+--- @param value T
+--- @return Result<T>
+function M.wrap(value)
+  return { success = true, value = value }
+end
+
+--- @generic T
+--- @param error string
+--- @return Result<T>
+function M.error(error)
+  return { success = false, error = error }
+end
+```
+
+## Usage Examples
+
+### Basic Result Handling
+```lua
+--- @param filename string
+--- @return Result<string>
+function M.read_file(filename)
+  local file = io.open(filename, 'r')
+  if not file then
+    return M.error(string.format('Failed to open file: %s', filename))
+  end
+  
+  local content = file:read('*all')
+  file:close()
+  
+  return M.wrap(content)
+end
+
+-- Using the result
+local result = M.read_file('config.lua')
+if result.success then
+  print(result.value)
+else
+  vim.notify(result.error, vim.log.levels.ERROR)
+end
+```
+
+### Chaining Results
+```lua
+--- @generic T
+--- @param result Result<T>
+--- @param fn fun(value: T): Result<U>
+--- @return Result<U>
+function M.and_then(result, fn)
+  if result.success then
+    return fn(result.value)
+  end
+  return result
+end
+
+-- Example usage
+local result = M.read_file('config.lua')
+  :and_then(function(content)
+    return M.parse_json(content)
+  end)
+  :and_then(function(data)
+    return M.validate_config(data)
+  end)
+```
+
+### Error Recovery
+```lua
+--- @generic T
+--- @param result Result<T>
+--- @param fn fun(error: string): Result<T>
+--- @return Result<T>
+function M.or_else(result, fn)
+  if result.success then
+    return result
+  end
+  return fn(result.error)
+end
+
+-- Example usage
+local result = M.read_file('config.lua')
+  :or_else(function()
+    return M.read_file('config.default.lua')
+  end)
+```
+
+## Best Practices
+
+1. **Always Use Result Types**
+   ```lua
+   -- ❌ Don't do this
+   function M.process(value)
+     if not value then
+       error('Invalid value')
+     end
+     return value
+   end
+
+   -- ✅ Do this
+   --- @generic T
+   --- @param value T
+   --- @return Result<T>
+   function M.process(value)
+     if not value then
+       return M.error('Invalid value')
+     end
+     return M.wrap(value)
+   end
+   ```
+
+2. **Descriptive Error Messages**
+   ```lua
+   -- ❌ Don't do this
+   return M.error('Failed')
+
+   -- ✅ Do this
+   return M.error(string.format('Failed to process file %s: %s', filename, reason))
+   ```
+
+3. **Error Context**
+   ```lua
+   --- @class ErrorContext
+   --- @field code string Error code
+   --- @field details? table Additional error details
+   --- @field stack? string Stack trace
+
+   --- @alias Result<T> { success: true, value: T } | { success: false, error: string, context: ErrorContext }
+   ```
+
+4. **Error Categories**
+   ```lua
+   --- @alias ErrorCategory
+   --- | 'validation'
+   --- | 'io'
+   --- | 'network'
+   --- | 'auth'
+   --- | 'config'
+   --- | 'internal'
+
+   --- @class ErrorContext
+   --- @field category ErrorCategory
+   --- @field code string
+   --- @field details? table
+   ```
+
+## Common Patterns
+
+### Validation Results
+```lua
+--- @class ValidationError
+--- @field field string Field name
+--- @field message string Error message
+--- @field value? any Invalid value
+
+--- @alias ValidationResult<T> Result<T> | { success: false, errors: ValidationError[] }
+```
+
+### API Error Handling
+```lua
+--- @class ApiError
+--- @field status number HTTP status code
+--- @field code string Error code
+--- @field message string Error message
+--- @field details? table Additional error details
+
+--- @alias ApiResult<T> Result<T> | { success: false, error: ApiError }
+```
+
+## Testing
+
+When testing error handling:
+1. Test both success and failure cases
+2. Verify error messages are descriptive
+3. Check error context is preserved
+4. Test error recovery paths
+5. Validate error categories are appropriate
+
+## IDE Support
+
+To get the best IDE support for error handling:
+1. Use complete type annotations for Result types
+2. Document error conditions in function docs
+3. Use type guards for error checking
+4. Define error interfaces for complex errors

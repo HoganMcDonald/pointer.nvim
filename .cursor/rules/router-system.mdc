@@ -1,0 +1,106 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+ # Router System
+
+This document explains how the router system works in pointer.nvim.
+
+## Overview
+
+The router system provides a simple way to manage different views in the plugin. It allows for navigation between different views while maintaining state and props.
+
+## Core Concepts
+
+### Views
+Views are the main UI components that represent different screens or sections of the plugin. Each view is:
+- Located in the `views/` directory
+- A Lua module that exports a `create()` function
+- Capable of receiving props and maintaining state
+- Rendered within the main UI buffer
+
+### Router Functions
+
+The router provides these main functions:
+
+```lua
+-- Register a new view
+router.register(name, component)
+
+-- Navigate to a view
+router.navigate(name, props)
+
+-- Get current view
+router.get_current_view()
+
+-- Get all registered views
+router.get_views()
+```
+
+## Usage Example
+
+```lua
+-- Register a view
+local chat_view = require('pointer.views.chat').create()
+router.register('chat', chat_view)
+
+-- Navigate to the view with props
+router.navigate('chat', { conversation_id = '123' })
+```
+
+## View Structure
+
+Each view should follow this structure:
+
+```lua
+local M = {}
+
+function M.create(opts)
+  local view = {
+    render = function(props, state)
+      -- Render logic here
+      return content_lines
+    end
+  }
+  return view
+end
+
+return M
+```
+
+## Best Practices
+
+1. **View Registration**
+   - Register all views during plugin initialization
+   - Use descriptive names for views
+   - Keep view names consistent across the codebase
+
+2. **Navigation**
+   - Always check if a view exists before navigating
+   - Pass only necessary props to views
+   - Use the router's error handling for invalid views
+
+3. **View Implementation**
+   - Keep views focused and single-purpose
+   - Use the base view component for common functionality
+   - Implement proper cleanup when views are unmounted
+
+4. **State Management**
+   - Use props for data passed from parent to view
+   - Use state for view-specific data that changes over time
+   - Clean up state when navigating away from views
+
+## Error Handling
+
+The router includes basic error handling:
+- Invalid view names trigger error notifications
+- Missing views are logged with appropriate error levels
+- Navigation to non-existent views is prevented
+
+## Integration with UI
+
+The router works in conjunction with the UI system:
+- Views are rendered in the main UI buffer
+- Navigation triggers UI re-renders automatically
+- Views can use shared UI components from the `components/` directory
