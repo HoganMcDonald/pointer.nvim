@@ -1,7 +1,7 @@
 --- Main view for the pointer sidepanel
 local header = require 'pointer.ui.components.header'
-local ui = require 'pointer.ui'
 local router = require 'pointer.ui.views.router'
+local ui = require 'pointer.ui'
 
 local M = {}
 

@@ -28,7 +28,6 @@ local function render_to_buffer(bufnr, content)
   -- Make buffer modifiable
   vim.api.nvim_set_option_value('modifiable', true, { buf = bufnr })
 
-
   -- Clear existing content and highlights
   vim.api.nvim_buf_clear_namespace(bufnr, ns_id, 0, -1)
 

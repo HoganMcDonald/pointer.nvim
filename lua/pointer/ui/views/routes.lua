@@ -1,5 +1,5 @@
-local views = require 'pointer.ui.views'
 local chat_view = require 'pointer.ui.views.chat'
+local views = require 'pointer.ui.views'
 
 local M = {}
 
@@ -11,7 +11,7 @@ end
 
 --- Set up default view
 function M.setup_default_view()
-  views.navigate('chat')
+  views.navigate 'chat'
 end
 
 --- Get all available routes
@@ -23,4 +23,4 @@ function M.get_routes()
   }
 end
 
-return M 
+return M

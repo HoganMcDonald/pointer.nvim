@@ -31,7 +31,7 @@ local function create_buffer()
   vim.api.nvim_buf_set_option(buf, 'buftype', 'nofile')
   vim.api.nvim_buf_set_option(buf, 'swapfile', false)
   vim.api.nvim_buf_set_option(buf, 'modifiable', true)
-  
+
   -- Disable all indentation and formatting
   vim.api.nvim_buf_set_option(buf, 'autoindent', false)
   vim.api.nvim_buf_set_option(buf, 'smartindent', false)

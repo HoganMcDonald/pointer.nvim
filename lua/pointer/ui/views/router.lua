@@ -25,7 +25,7 @@ function M.navigate(name, props)
   current_view = {
     name = name,
     component = views[name],
-    props = props or {}
+    props = props or {},
   }
 end
 
@@ -41,4 +41,4 @@ function M.get_views()
   return views
 end
 
-return M 
+return M
