@@ -1,0 +1,300 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Documentation Standards
+
+This document outlines the documentation standards for pointer.nvim.
+
+## Overview
+
+Clear and comprehensive documentation is essential for maintainability and usability. Follow these guidelines to ensure consistent and helpful documentation across the codebase.
+
+## Best Practices
+
+### Module Documentation
+
+1. **Module Header**
+   ```lua
+   -- ❌ Don't do this
+   local M = {}
+   return M
+   
+   -- ✅ Do this
+   --- @module pointer.module_name
+   --- @description Brief description of the module's purpose
+   --- @author Author Name
+   --- @copyright Copyright notice
+   local M = {}
+   return M
+   ```
+
+2. **Function Documentation**
+   ```lua
+   -- ❌ Don't do this
+   function M.process(value)
+     return value
+   end
+   
+   -- ✅ Do this
+   --- Process a value and return the result
+   --- @param value any The value to process
+   --- @return any The processed value
+   --- @raise Error if value is invalid
+   function M.process(value)
+     return value
+   end
+   ```
+
+### Type Documentation
+
+1. **Type Definitions**
+   ```lua
+   -- ❌ Don't do this
+   --- @class Component
+   --- @field props table
+   
+   -- ✅ Do this
+   --- @class Component
+   --- @field props ComponentProps Component properties
+   --- @field state? ComponentState Optional component state
+   --- @field render fun(self: Component): string[] Render function
+   ```
+
+2. **Enum Types**
+   ```lua
+   -- ❌ Don't do this
+   --- @alias Alignment string
+   
+   -- ✅ Do this
+   --- @alias Alignment 'left' | 'center' | 'right'
+   ```
+
+### Component Documentation
+
+1. **Component Props**
+   ```lua
+   -- ❌ Don't do this
+   --- @param props table Component properties
+   
+   -- ✅ Do this
+   --- @param props ComponentProps Component properties
+   --- @field props.title string Component title
+   --- @field props.align? Alignment Text alignment (default: 'left')
+   --- @field props.padding? number Padding size (default: 0)
+   --- @field props.border? boolean Show border (default: true)
+   ```
+
+2. **Component Lifecycle**
+   ```lua
+   -- ❌ Don't do this
+   component.mount = function()
+     -- Mount logic
+   end
+   
+   -- ✅ Do this
+   --- Called when the component is mounted
+   --- @param props ComponentProps Component properties
+   --- @param state ComponentState Component state
+   --- @return nil
+   component.mount = function(props, state)
+     -- Mount logic
+   end
+   ```
+
+### API Documentation
+
+1. **API Functions**
+   ```lua
+   -- ❌ Don't do this
+   function M.api_call(data)
+     return http.post(url, data)
+   end
+   
+   -- ✅ Do this
+   --- Make an API call to the server
+   --- @param data ApiRequest The request data
+   --- @return Result<ApiResponse> The API response
+   --- @raise ApiError if the request fails
+   function M.api_call(data)
+     return http.post(url, data)
+   end
+   ```
+
+2. **API Types**
+   ```lua
+   -- ❌ Don't do this
+   --- @class ApiResponse
+   --- @field data any
+   
+   -- ✅ Do this
+   --- @class ApiResponse<T>
+   --- @field data T Response data
+   --- @field status number HTTP status code
+   --- @field message? string Optional message
+   --- @field timestamp number Unix timestamp
+   ```
+
+### Examples
+
+1. **Usage Examples**
+   ```lua
+   -- ❌ Don't do this
+   -- Example usage
+   local result = M.process(value)
+   
+   -- ✅ Do this
+   --- @example
+   --- local result = M.process("example")
+   --- assert.equals("processed", result)
+   ```
+
+2. **Component Examples**
+   ```lua
+   -- ❌ Don't do this
+   -- Create a component
+   local component = M.create()
+   
+   -- ✅ Do this
+   --- @example
+   --- local component = M.create({
+   ---   title = "Example",
+   ---   align = "left",
+   ---   padding = 1,
+   ---   border = true
+   --- })
+   --- local content = component.render(component.props)
+   ```
+
+### Error Documentation
+
+1. **Error Types**
+   ```lua
+   -- ❌ Don't do this
+   --- @class Error
+   --- @field message string
+   
+   -- ✅ Do this
+   --- @class Error
+   --- @field message string Error message
+   --- @field code string Error code
+   --- @field details? table Additional error details
+   --- @field stack? string Stack trace
+   ```
+
+2. **Error Handling**
+   ```lua
+   -- ❌ Don't do this
+   if error then
+     return nil
+   end
+   
+   -- ✅ Do this
+   --- Handle API errors
+   --- @param error ApiError The API error
+   --- @return Result<ApiResponse> Error result
+   if error then
+     return M.error({
+       message = error.message,
+       code = error.code,
+       details = error.details
+     })
+   end
+   ```
+
+## Documentation Structure
+
+1. **File Organization**
+   ```lua
+   -- Module documentation
+   --- @module pointer.module_name
+   --- @description Module description
+   
+   -- Type definitions
+   --- @class TypeName
+   --- @field field1 string Description
+   
+   -- Constants
+   local CONSTANT = "value"
+   
+   -- Public functions
+   function M.public_function()
+   end
+   
+   -- Private functions
+   local function private_function()
+   end
+   ```
+
+2. **Section Headers**
+   ```lua
+   -- Types
+   --- @class Type1
+   --- @class Type2
+   
+   -- Public API
+   function M.api1()
+   end
+   function M.api2()
+   end
+   
+   -- Private helpers
+   local function helper1()
+   end
+   local function helper2()
+   end
+   ```
+
+## Common Pitfalls
+
+1. **Incomplete Documentation**
+   ```lua
+   -- ❌ Don't do this
+   --- @param value any
+   
+   -- ✅ Do this
+   --- @param value any The value to process
+   --- @return any The processed value
+   ```
+
+2. **Missing Examples**
+   ```lua
+   -- ❌ Don't do this
+   --- Process a value
+   function M.process(value)
+   end
+   
+   -- ✅ Do this
+   --- Process a value
+   --- @example
+   --- local result = M.process("example")
+   --- assert.equals("processed", result)
+   function M.process(value)
+   end
+   ```
+
+3. **Inconsistent Formatting**
+   ```lua
+   -- ❌ Don't do this
+   --- @param value any
+   --- @return any
+   function M.process(value)
+   end
+   
+   -- ✅ Do this
+   --- Process a value
+   --- @param value any The value to process
+   --- @return any The processed value
+   function M.process(value)
+   end
+   ```
+
+## Review Process
+
+When reviewing documentation:
+1. Check completeness
+2. Verify examples
+3. Look for inconsistencies
+4. Ensure clarity
+5. Validate type definitions 

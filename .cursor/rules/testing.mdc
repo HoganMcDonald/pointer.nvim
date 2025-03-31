@@ -1,0 +1,260 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Testing Guidelines
+
+This document outlines the testing practices and standards for pointer.nvim.
+
+## Overview
+
+All components and modules should have corresponding test files. Tests should be comprehensive, covering component lifecycle, state management, error handling, edge cases, and performance benchmarks.
+
+## Test Structure
+
+### Component Tests
+
+```lua
+describe('ComponentName', function()
+  local component
+  
+  before_each(function()
+    component = require('pointer.components.component_name').create()
+  end)
+  
+  after_each(function()
+    -- Cleanup
+  end)
+  
+  it('should handle mount correctly', function()
+    component.mount()
+    -- Assert mount behavior
+  end)
+  
+  it('should handle unmount correctly', function()
+    component.mount()
+    component.unmount()
+    -- Assert cleanup
+  end)
+  
+  it('should handle state updates', function()
+    component.mount()
+    component.update({ new_prop = 'value' })
+    -- Assert state changes
+  end)
+  
+  it('should handle error cases', function()
+    -- Test error scenarios
+  end)
+end)
+```
+
+### Module Tests
+
+```lua
+describe('ModuleName', function()
+  local M = require('pointer.module_name')
+  
+  it('should process valid input', function()
+    local result = M.process('valid input')
+    assert.equals('expected output', result)
+  end)
+  
+  it('should handle invalid input', function()
+    local result = M.process(nil)
+    assert.is_nil(result)
+  end)
+end)
+```
+
+## Test Categories
+
+### Unit Tests
+- Test individual components and functions
+- Mock external dependencies
+- Focus on specific behaviors
+- Fast execution
+
+### Integration Tests
+- Test component interactions
+- Test router navigation
+- Test theme changes
+- Test state management
+
+### Performance Tests
+- Measure render times
+- Check memory usage
+- Profile expensive operations
+- Test with large datasets
+
+## Best Practices
+
+1. **Test Organization**
+   ```lua
+   -- ❌ Don't do this
+   it('should do everything', function()
+     -- Too many assertions
+   end)
+   
+   -- ✅ Do this
+   it('should handle mount', function()
+     -- Specific mount test
+   end)
+   
+   it('should handle state updates', function()
+     -- Specific state test
+   end)
+   ```
+
+2. **Mocking**
+   ```lua
+   -- ❌ Don't do this
+   local actual_api = require('pointer.api')
+   
+   -- ✅ Do this
+   local mock_api = {
+     fetch = function()
+       return { success = true, data = 'mock data' }
+     end
+   }
+   ```
+
+3. **Assertions**
+   ```lua
+   -- ❌ Don't do this
+   assert(component.state.value == 'expected')
+   
+   -- ✅ Do this
+   assert.equals('expected', component.state.value)
+   assert.is_true(component.state.loading)
+   assert.is_nil(component.state.error)
+   ```
+
+4. **Error Testing**
+   ```lua
+   -- ❌ Don't do this
+   local result = M.process(nil)
+   assert(result.error)
+   
+   -- ✅ Do this
+   local result = M.process(nil)
+   assert.equals('Invalid input', result.error)
+   assert.is_false(result.success)
+   ```
+
+## Test Coverage
+
+1. **Component Coverage**
+   - Mount/unmount lifecycle
+   - State updates
+   - Props handling
+   - Event handling
+   - Error states
+
+2. **Module Coverage**
+   - Input validation
+   - Error handling
+   - Edge cases
+   - Performance
+
+3. **Integration Coverage**
+   - Component interactions
+   - Router navigation
+   - Theme changes
+   - State management
+
+## Testing Tools
+
+1. **LuaTest**
+   - Use for unit tests
+   - Provides assertions
+   - Supports mocking
+
+2. **Busted**
+   - Use for integration tests
+   - Supports async testing
+   - Better error reporting
+
+3. **Performance Profiling**
+   - Use `vim.loop.hrtime()`
+   - Profile render times
+   - Check memory usage
+
+## CI/CD Integration
+
+1. **Test Runner**
+   ```yaml
+   steps:
+     - name: Run Tests
+       run: busted lua/pointer
+   ```
+
+2. **Coverage Reports**
+   ```yaml
+   steps:
+     - name: Coverage
+       run: luacov lua/pointer
+   ```
+
+## Common Pitfalls
+
+1. **Async Testing**
+   ```lua
+   -- ❌ Don't do this
+   it('should handle async', function()
+     M.async_operation()
+     assert.equals('result', M.state.value)
+   end)
+   
+   -- ✅ Do this
+   it('should handle async', function()
+     local done = false
+     M.async_operation(function()
+       done = true
+     end)
+     assert.is_true(done)
+   end)
+   ```
+
+2. **State Isolation**
+   ```lua
+   -- ❌ Don't do this
+   describe('Component', function()
+     local state = {}
+     
+     it('should update state', function()
+       state.value = 'test'
+     end)
+     
+     it('should have clean state', function()
+       assert.equals('test', state.value) -- State leaked
+     end)
+   end)
+   
+   -- ✅ Do this
+   describe('Component', function()
+     local component
+     
+     before_each(function()
+       component = create_component()
+     end)
+     
+     it('should update state', function()
+       component.state.value = 'test'
+     end)
+     
+     it('should have clean state', function()
+       assert.is_nil(component.state.value)
+     end)
+   end)
+   ```
+
+## Review Process
+
+When reviewing tests:
+1. Check test coverage
+2. Verify error handling
+3. Look for edge cases
+4. Ensure performance tests
+5. Validate async behavior 

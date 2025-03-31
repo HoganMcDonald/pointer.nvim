@@ -1,0 +1,278 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Security Guidelines
+
+This document outlines security best practices for pointer.nvim.
+
+## Overview
+
+Security is critical for protecting user data and ensuring safe operation. Follow these guidelines to maintain security, especially when handling sensitive data and user input.
+
+## Best Practices
+
+### Sensitive Data Handling
+
+1. **API Keys and Secrets**
+   ```lua
+   -- ❌ Don't do this
+   local api_key = "secret_key_123"
+   
+   -- ✅ Do this
+   local api_key = os.getenv("POINTER_API_KEY")
+   if not api_key then
+     return M.error("API key not found in environment")
+   end
+   ```
+
+2. **Secure Storage**
+   ```lua
+   -- ❌ Don't do this
+   vim.fn.writefile(api_key, "config.json")
+   
+   -- ✅ Do this
+   local encrypted_key = encrypt(api_key)
+   vim.fn.writefile(encrypted_key, "config.enc")
+   ```
+
+### Input Validation
+
+1. **User Input**
+   ```lua
+   -- ❌ Don't do this
+   function process_input(input)
+     return input
+   end
+   
+   -- ✅ Do this
+   function process_input(input)
+     if type(input) ~= "string" then
+       return M.error("Input must be a string")
+     end
+     if #input > 1000 then
+       return M.error("Input too long")
+     end
+     return sanitize(input)
+   end
+   ```
+
+2. **Command Input**
+   ```lua
+   -- ❌ Don't do this
+   vim.cmd(input)
+   
+   -- ✅ Do this
+   local allowed_commands = {
+     ["help"] = true,
+     ["quit"] = true
+   }
+   if allowed_commands[input] then
+     vim.cmd(input)
+   else
+     return M.error("Invalid command")
+   end
+   ```
+
+### File Operations
+
+1. **Path Validation**
+   ```lua
+   -- ❌ Don't do this
+   local file = io.open(path, "r")
+   
+   -- ✅ Do this
+   local function is_safe_path(path)
+     local safe_pattern = "^[%w/%-_%.]+$"
+     return path:match(safe_pattern) ~= nil
+   end
+   
+   if not is_safe_path(path) then
+     return M.error("Invalid file path")
+   end
+   
+   local file = io.open(path, "r")
+   ```
+
+2. **File Permissions**
+   ```lua
+   -- ❌ Don't do this
+   vim.fn.writefile(data, file_path)
+   
+   -- ✅ Do this
+   local function write_file_safely(data, file_path)
+     local temp_path = file_path .. ".tmp"
+     local success = vim.fn.writefile(data, temp_path)
+     if success == 0 then
+       vim.fn.rename(temp_path, file_path)
+     else
+       vim.fn.delete(temp_path)
+       return M.error("Failed to write file")
+     end
+   end
+   ```
+
+### Network Operations
+
+1. **HTTPS Only**
+   ```lua
+   -- ❌ Don't do this
+   local response = http.get("http://api.example.com")
+   
+   -- ✅ Do this
+   local function make_request(url)
+     if not url:match("^https://") then
+       return M.error("Only HTTPS URLs are allowed")
+     end
+     return http.get(url)
+   end
+   ```
+
+2. **Request Validation**
+   ```lua
+   -- ❌ Don't do this
+   local response = http.post(url, data)
+   
+   -- ✅ Do this
+   local function make_request(url, data)
+     if not validate_url(url) then
+       return M.error("Invalid URL")
+     end
+     if not validate_data(data) then
+       return M.error("Invalid data")
+     end
+     return http.post(url, data)
+   end
+   ```
+
+### Buffer Operations
+
+1. **Buffer Security**
+   ```lua
+   -- ❌ Don't do this
+   vim.api.nvim_buf_set_option(0, "modifiable", true)
+   
+   -- ✅ Do this
+   local function set_buffer_modifiable(bufnr, modifiable)
+     if not vim.api.nvim_buf_is_valid(bufnr) then
+       return M.error("Invalid buffer")
+     end
+     vim.api.nvim_buf_set_option(bufnr, "modifiable", modifiable)
+   end
+   ```
+
+2. **Buffer Content**
+   ```lua
+   -- ❌ Don't do this
+   vim.api.nvim_buf_set_lines(0, 0, -1, false, content)
+   
+   -- ✅ Do this
+   local function set_buffer_content(bufnr, content)
+     if not vim.api.nvim_buf_is_valid(bufnr) then
+       return M.error("Invalid buffer")
+     end
+     if not vim.tbl_islist(content) then
+       return M.error("Invalid content")
+     end
+     vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, content)
+   end
+   ```
+
+### Error Handling
+
+1. **Secure Error Messages**
+   ```lua
+   -- ❌ Don't do this
+   return M.error("Failed: " .. error_message)
+   
+   -- ✅ Do this
+   local function sanitize_error(error_message)
+     return error_message:gsub("[^%w%s%-_%.]", "")
+   end
+   
+   return M.error("Failed: " .. sanitize_error(error_message))
+   ```
+
+2. **Error Logging**
+   ```lua
+   -- ❌ Don't do this
+   print("Error: " .. error_message)
+   
+   -- ✅ Do this
+   local function log_error(error_message)
+     local sanitized = sanitize_error(error_message)
+     vim.notify(sanitized, vim.log.levels.ERROR, {
+       title = "Pointer Error"
+     })
+   end
+   ```
+
+## Common Pitfalls
+
+1. **Command Injection**
+   ```lua
+   -- ❌ Don't do this
+   vim.cmd("!echo " .. user_input)
+   
+   -- ✅ Do this
+   local function execute_command(input)
+     local sanitized = input:gsub("[^%w%s%-_%.]", "")
+     vim.cmd("!echo " .. sanitized)
+   end
+   ```
+
+2. **Buffer Overflow**
+   ```lua
+   -- ❌ Don't do this
+   local content = string.rep("x", 1000000)
+   vim.api.nvim_buf_set_lines(0, 0, -1, false, {content})
+   
+   -- ✅ Do this
+   local MAX_CONTENT_LENGTH = 100000
+   if #content > MAX_CONTENT_LENGTH then
+     return M.error("Content too large")
+   end
+   vim.api.nvim_buf_set_lines(0, 0, -1, false, {content})
+   ```
+
+## Security Checklist
+
+1. **Input Validation**
+   - [ ] Validate all user input
+   - [ ] Sanitize command input
+   - [ ] Check file paths
+   - [ ] Validate URLs
+
+2. **Data Protection**
+   - [ ] Use environment variables for secrets
+   - [ ] Encrypt sensitive data
+   - [ ] Secure file operations
+   - [ ] Validate file permissions
+
+3. **Network Security**
+   - [ ] Use HTTPS only
+   - [ ] Validate URLs
+   - [ ] Check response data
+   - [ ] Handle timeouts
+
+4. **Buffer Security**
+   - [ ] Validate buffer operations
+   - [ ] Check buffer content
+   - [ ] Secure buffer options
+   - [ ] Handle buffer errors
+
+5. **Error Handling**
+   - [ ] Sanitize error messages
+   - [ ] Log errors securely
+   - [ ] Handle edge cases
+   - [ ] Provide safe defaults
+
+## Review Process
+
+When reviewing security:
+1. Check for sensitive data exposure
+2. Verify input validation
+3. Look for command injection risks
+4. Ensure secure file operations
+5. Validate network security 

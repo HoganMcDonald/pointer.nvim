@@ -1,0 +1,301 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Version Control Guidelines
+
+This document outlines version control practices for pointer.nvim.
+
+## Overview
+
+Consistent version control practices help maintain code quality and make collaboration easier. Follow these guidelines for commits, pull requests, and version management.
+
+## Commit Messages
+
+### Format
+
+```
+<type>(<scope>): <description>
+
+[optional body]
+
+[optional footer]
+```
+
+### Types
+
+1. **feat**: New feature
+2. **fix**: Bug fix
+3. **docs**: Documentation changes
+4. **style**: Code style changes
+5. **refactor**: Code refactoring
+6. **perf**: Performance improvements
+7. **test**: Adding or modifying tests
+8. **chore**: Maintenance tasks
+
+### Examples
+
+```git
+# ❌ Don't do this
+git commit -m "fixed bug"
+git commit -m "added new feature"
+git commit -m "updated docs"
+
+# ✅ Do this
+git commit -m "fix(router): handle navigation errors gracefully"
+git commit -m "feat(ui): add new theme support"
+git commit -m "docs(api): update API documentation"
+```
+
+### Guidelines
+
+1. **Description**
+   - Use imperative mood ("add" not "added")
+   - Keep it under 72 characters
+   - Don't end with a period
+
+2. **Body**
+   - Explain what and why
+   - Wrap at 72 characters
+   - Use bullet points for multiple changes
+
+3. **Footer**
+   - Reference issues
+   - Note breaking changes
+   - List affected components
+
+## Pull Requests
+
+### Title Format
+
+```
+<type>(<scope>): <description>
+```
+
+### Description Template
+
+```markdown
+## Description
+Brief description of the changes
+
+## Changes
+- List of changes
+- One per line
+- Use bullet points
+
+## Testing
+- [ ] Unit tests added/updated
+- [ ] Integration tests added/updated
+- [ ] Manual testing completed
+
+## Breaking Changes
+List any breaking changes here
+
+## Related Issues
+Fixes #123
+Closes #456
+```
+
+### Guidelines
+
+1. **Size**
+   - Keep PRs focused and small
+   - One feature/fix per PR
+   - Maximum 400 lines changed
+
+2. **Review Process**
+   - Request reviews from relevant team members
+   - Address all review comments
+   - Keep discussion focused
+
+3. **Testing**
+   - Include test coverage
+   - Document manual testing
+   - Verify CI passes
+
+## Branch Management
+
+### Branch Naming
+
+```
+<type>/<scope>/<description>
+```
+
+### Examples
+
+```git
+# ❌ Don't do this
+git checkout -b fix
+git checkout -b new-feature
+git checkout -b update
+
+# ✅ Do this
+git checkout -b fix/router-navigation
+git checkout -b feat/ui-theme
+git checkout -b docs/api-updates
+```
+
+### Guidelines
+
+1. **Main Branches**
+   - `main`: Production code
+   - `develop`: Development code
+   - `release/*`: Release branches
+
+2. **Feature Branches**
+   - Branch from `develop`
+   - Keep up to date
+   - Delete after merge
+
+3. **Hotfix Branches**
+   - Branch from `main`
+   - Merge to both `main` and `develop`
+   - Delete after merge
+
+## Version Management
+
+### Semantic Versioning
+
+```
+<major>.<minor>.<patch>
+```
+
+### Examples
+
+```lua
+-- ❌ Don't do this
+return {
+  version = "1.0",
+  version = "2",
+  version = "1.0.1.2"
+}
+
+-- ✅ Do this
+return {
+  version = "1.0.0",
+  version = "2.0.0",
+  version = "1.0.1"
+}
+```
+
+### Guidelines
+
+1. **Major Version**
+   - Breaking changes
+   - New major features
+   - Architecture changes
+
+2. **Minor Version**
+   - New features
+   - Backwards compatible
+   - Deprecation notices
+
+3. **Patch Version**
+   - Bug fixes
+   - Documentation
+   - Performance improvements
+
+## Release Process
+
+### Release Checklist
+
+1. **Preparation**
+   - [ ] Update version number
+   - [ ] Update changelog
+   - [ ] Run full test suite
+   - [ ] Check dependencies
+
+2. **Documentation**
+   - [ ] Update README
+   - [ ] Update API docs
+   - [ ] Update examples
+   - [ ] Check breaking changes
+
+3. **Release**
+   - [ ] Create release branch
+   - [ ] Run release tests
+   - [ ] Create release tag
+   - [ ] Update release notes
+
+### Changelog Format
+
+```markdown
+# Changelog
+
+## [1.0.0] - 2024-03-31
+
+### Added
+- New feature 1
+- New feature 2
+
+### Changed
+- Updated feature 1
+- Improved performance
+
+### Deprecated
+- Old feature 1
+- Old feature 2
+
+### Removed
+- Removed feature 1
+- Removed feature 2
+
+### Fixed
+- Bug fix 1
+- Bug fix 2
+
+### Security
+- Security fix 1
+- Security fix 2
+```
+
+## Common Pitfalls
+
+1. **Commit Messages**
+   ```git
+   # ❌ Don't do this
+   git commit -m "wip"
+   git commit -m "fix stuff"
+   git commit -m "update"
+
+   # ✅ Do this
+   git commit -m "fix(ui): resolve theme flickering"
+   git commit -m "feat(router): add navigation guards"
+   git commit -m "docs(api): clarify error responses"
+   ```
+
+2. **Branch Management**
+   ```git
+   # ❌ Don't do this
+   git checkout -b feature
+   git checkout -b bugfix
+   git checkout -b update
+
+   # ✅ Do this
+   git checkout -b feature/ui-components
+   git checkout -b fix/router-errors
+   git checkout -b docs/api-reference
+   ```
+
+3. **Version Numbers**
+   ```lua
+   -- ❌ Don't do this
+   version = "1.0"
+   version = "2"
+   version = "1.0.1.2"
+
+   -- ✅ Do this
+   version = "1.0.0"
+   version = "2.0.0"
+   version = "1.0.1"
+   ```
+
+## Review Process
+
+When reviewing changes:
+1. Check commit messages
+2. Verify branch naming
+3. Review PR description
+4. Check test coverage
+5. Validate version numbers 

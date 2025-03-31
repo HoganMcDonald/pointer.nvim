@@ -1,0 +1,336 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Performance Guidelines
+
+This document outlines performance optimization practices for pointer.nvim.
+
+## Overview
+
+Performance is critical for a smooth user experience. Follow these guidelines to ensure optimal performance, especially for UI rendering and state management.
+
+## Best Practices
+
+### UI Rendering
+
+1. **Batch Updates**
+   ```lua
+   -- ❌ Don't do this
+   for i = 1, 100 do
+     update_ui(i)
+   end
+   
+   -- ✅ Do this
+   local updates = {}
+   for i = 1, 100 do
+     table.insert(updates, i)
+   end
+   vim.schedule(function()
+     update_ui(updates)
+   end)
+   ```
+
+2. **Debounce Frequent Updates**
+   ```lua
+   -- ❌ Don't do this
+   function on_change()
+     update_ui()
+   end
+   
+   -- ✅ Do this
+   local debounce_timer
+   function on_change()
+     if debounce_timer then
+       debounce_timer:stop()
+     end
+     debounce_timer = vim.loop.new_timer()
+     debounce_timer:start(100, 0, vim.schedule_wrap(function()
+       update_ui()
+     end))
+   end
+   ```
+
+3. **Efficient Content Updates**
+   ```lua
+   -- ❌ Don't do this
+   function update_content()
+     local lines = {}
+     for i = 1, 1000 do
+       table.insert(lines, generate_line(i))
+     end
+     vim.api.nvim_buf_set_lines(0, 0, -1, false, lines)
+   end
+   
+   -- ✅ Do this
+   function update_content()
+     local lines = {}
+     local batch_size = 100
+     for i = 1, 1000, batch_size do
+       local batch = {}
+       for j = i, math.min(i + batch_size - 1, 1000) do
+         table.insert(batch, generate_line(j))
+       end
+       table.insert(lines, batch)
+     end
+     
+     vim.schedule(function()
+       for _, batch in ipairs(lines) do
+         vim.api.nvim_buf_set_lines(0, 0, -1, false, batch)
+       end
+     end)
+   end
+   ```
+
+### State Management
+
+1. **Efficient State Updates**
+   ```lua
+   -- ❌ Don't do this
+   function update_state()
+     for key, value in pairs(new_state) do
+       state[key] = value
+     end
+     render()
+   end
+   
+   -- ✅ Do this
+   function update_state()
+     local changed = false
+     for key, value in pairs(new_state) do
+       if state[key] ~= value then
+         state[key] = value
+         changed = true
+       end
+     end
+     if changed then
+       render()
+     end
+   end
+   ```
+
+2. **Memoization**
+   ```lua
+   -- ❌ Don't do this
+   function get_processed_data()
+     return expensive_operation(data)
+   end
+   
+   -- ✅ Do this
+   local memoized_result
+   local last_data_hash
+   function get_processed_data()
+     local current_hash = hash_data(data)
+     if current_hash ~= last_data_hash then
+       memoized_result = expensive_operation(data)
+       last_data_hash = current_hash
+     end
+     return memoized_result
+   end
+   ```
+
+### Data Structures
+
+1. **Efficient Lookups**
+   ```lua
+   -- ❌ Don't do this
+   local items = {}
+   for _, item in ipairs(raw_items) do
+     table.insert(items, item)
+   end
+   
+   -- ✅ Do this
+   local items = {}
+   for _, item in ipairs(raw_items) do
+     items[item.id] = item
+   end
+   ```
+
+2. **Lazy Loading**
+   ```lua
+   -- ❌ Don't do this
+   local all_data = load_all_data()
+   
+   -- ✅ Do this
+   local data_cache = {}
+   function get_data(id)
+     if not data_cache[id] then
+       data_cache[id] = load_data(id)
+     end
+     return data_cache[id]
+   end
+   ```
+
+### Event Handling
+
+1. **Efficient Event Listeners**
+   ```lua
+   -- ❌ Don't do this
+   function setup_listeners()
+     for i = 1, 100 do
+       vim.api.nvim_buf_add_keymap(0, 'n', '<key>', '', {
+         callback = function()
+           handle_event(i)
+         end
+       })
+     end
+   end
+   
+   -- ✅ Do this
+   function setup_listeners()
+     local keymaps = {}
+     for i = 1, 100 do
+       table.insert(keymaps, {
+         mode = 'n',
+         lhs = '<key>',
+         rhs = '',
+         opts = {
+           callback = function()
+             handle_event(i)
+           end
+         }
+       })
+     end
+     vim.api.nvim_buf_set_keymaps(0, keymaps)
+   end
+   ```
+
+### Memory Management
+
+1. **Resource Cleanup**
+   ```lua
+   -- ❌ Don't do this
+   function create_component()
+     local timer = vim.loop.new_timer()
+     timer:start(1000, 1000, function()
+       update()
+     end)
+   end
+   
+   -- ✅ Do this
+   function create_component()
+     local timer = vim.loop.new_timer()
+     timer:start(1000, 1000, function()
+       update()
+     end)
+     
+     return {
+       unmount = function()
+         timer:stop()
+         timer:close()
+       end
+     }
+   end
+   ```
+
+2. **Buffer Management**
+   ```lua
+   -- ❌ Don't do this
+   function create_buffer()
+     local bufnr = vim.api.nvim_create_buf(false, true)
+     vim.api.nvim_buf_set_option(bufnr, 'buftype', 'nofile')
+     return bufnr
+   end
+   
+   -- ✅ Do this
+   local buffer_pool = {}
+   function create_buffer()
+     local bufnr = table.remove(buffer_pool) or vim.api.nvim_create_buf(false, true)
+     vim.api.nvim_buf_set_option(bufnr, 'buftype', 'nofile')
+     return bufnr
+   end
+   
+   function release_buffer(bufnr)
+     if vim.api.nvim_buf_is_valid(bufnr) then
+       table.insert(buffer_pool, bufnr)
+     end
+   end
+   ```
+
+## Performance Monitoring
+
+1. **Profiling**
+   ```lua
+   function profile_operation()
+     local start = vim.loop.hrtime()
+     -- Operation to profile
+     local duration = (vim.loop.hrtime() - start) / 1e6
+     print(string.format('Operation took %.2f ms', duration))
+   end
+   ```
+
+2. **Memory Tracking**
+   ```lua
+   function track_memory()
+     local before = collectgarbage('count')
+     -- Operation to track
+     local after = collectgarbage('count')
+     print(string.format('Memory usage: %.2f KB', (after - before) / 1024))
+   end
+   ```
+
+## Common Pitfalls
+
+1. **Excessive Re-renders**
+   ```lua
+   -- ❌ Don't do this
+   function update_ui()
+     render_header()
+     render_content()
+     render_footer()
+   end
+   
+   -- ✅ Do this
+   function update_ui()
+     local needs_update = false
+     if header_changed then
+       render_header()
+       needs_update = true
+     end
+     if content_changed then
+       render_content()
+       needs_update = true
+     end
+     if footer_changed then
+       render_footer()
+       needs_update = true
+     end
+     if needs_update then
+       vim.schedule(function()
+         vim.api.nvim_buf_set_option(0, 'modifiable', true)
+         -- Apply changes
+         vim.api.nvim_buf_set_option(0, 'modifiable', false)
+       end)
+     end
+   end
+   ```
+
+2. **Inefficient State Updates**
+   ```lua
+   -- ❌ Don't do this
+   function update_state()
+     state = vim.tbl_deep_extend('force', state, new_state)
+   end
+   
+   -- ✅ Do this
+   function update_state()
+     local changed = false
+     for key, value in pairs(new_state) do
+       if not vim.deep_equal(state[key], value) then
+         state[key] = value
+         changed = true
+       end
+     end
+     return changed
+   end
+   ```
+
+## Review Process
+
+When reviewing performance:
+1. Check for unnecessary re-renders
+2. Verify efficient data structures
+3. Look for memory leaks
+4. Profile expensive operations
+5. Validate async handling 
