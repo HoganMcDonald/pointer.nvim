@@ -27,6 +27,13 @@ function M.navigate(name, props)
     component = views[name],
     props = props or {},
   }
+
+  -- Trigger UI re-render
+  local ui = require 'pointer.ui'
+  local app = require 'pointer.app'
+  if app.sidepanel and app.sidepanel.buffer_id and app.root_component then
+    ui.render_component(app.root_component, app.sidepanel.buffer_id)
+  end
 end
 
 --- Get the current active view

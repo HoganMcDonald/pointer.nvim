@@ -1,4 +1,5 @@
 local chat_view = require 'pointer.views.chat'
+local help_view = require 'pointer.views.help'
 local router = require 'pointer.lib.router'
 
 local M = {}
@@ -7,6 +8,8 @@ local M = {}
 function M.register_views()
   -- Register chat view
   router.register('chat', chat_view.create())
+  -- Register help view
+  router.register('help', help_view.create())
 end
 
 --- Set up default view
@@ -19,6 +22,7 @@ end
 function M.get_routes()
   return {
     'chat',
+    'help',
     -- Add more routes here as they are created
   }
 end

@@ -18,7 +18,7 @@ function M.create(opts)
   local main_header = header.create {
     title = 'Pointer.nvim',
     align = 'center',
-    padding = 1,
+    padding = 0,
     border = true,
   }
 

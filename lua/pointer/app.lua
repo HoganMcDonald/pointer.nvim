@@ -4,8 +4,6 @@ local theme = require 'pointer.ui.theme'
 local ui = require 'pointer.ui'
 local views = require 'pointer.views'
 
-local root_component = nil
-
 --- Stores sidepanel state.
 --- @type table
 --- @field buffer_id number|nil The buffer ID of the sidepanel
@@ -14,6 +12,12 @@ local sidepanel = {
   buffer_id = nil,
   window_id = nil,
 }
+
+-- Make sidepanel accessible
+M.sidepanel = sidepanel
+
+-- Initialize root_component as nil
+local root_component = nil
 
 --- Creates the sidepanel buffer if it doesn't exist.
 --- @return number The buffer ID of the sidepanel
@@ -97,6 +101,19 @@ local function setup_window_options(win)
 
   -- Apply the custom highlighting
   vim.api.nvim_win_set_option(win, 'winhighlight', 'Normal:PointerSidepanel')
+
+  -- Set up keybindings
+  local buf = vim.api.nvim_win_get_buf(win)
+  
+  -- Ensure buffer is modifiable for keybindings
+  vim.api.nvim_buf_set_option(buf, 'modifiable', true)
+  
+  -- Set up keybindings
+  local keymaps = require 'pointer.config.keymaps'
+  keymaps.setup(buf)
+  
+  -- Make buffer non-modifiable after setting keybindings
+  vim.api.nvim_buf_set_option(buf, 'modifiable', false)
 end
 
 --- Opens the sidepanel.
@@ -202,6 +219,9 @@ function M.setup(opts)
   root_component = views.create {
     width = M.options.width,
   }
+
+  -- Make root_component accessible after initialization
+  M.root_component = root_component
 
   -- Set up routes and default view
   local routes = require 'pointer.config.routes'
