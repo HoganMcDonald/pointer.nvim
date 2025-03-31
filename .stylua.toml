@@ -1,7 +1,7 @@
 column_width = 100
-indent_type = "spaces"
+indent_type = "Spaces"
 indent_width = 2
-line_endings = "unix"
-quote_style = "double"
-call_parentheses = "always"
-collapse_simple_statement = true 
+line_endings = "Unix"
+quote_style = "ForceDouble"
+call_parentheses = "Always"
+collapse_simple_statement = 'Always'

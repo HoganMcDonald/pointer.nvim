@@ -1,0 +1,113 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Development Scripts
+
+This document outlines the development scripts available in the `bin/` directory.
+
+## Overview
+
+The project includes several development scripts to help maintain code quality and consistency. These scripts are located in the `bin/` directory and should be used as part of the development workflow.
+
+## Available Scripts
+
+### Type Checking
+```bash
+./bin/check-types
+```
+Runs type checking on the Lua codebase using LuaLS. This script:
+- Checks for type errors and warnings
+- Uses the project's `.luarc.json` configuration
+- Requires `lua-language-server` to be installed via Homebrew
+
+### Code Formatting
+```bash
+./bin/format
+```
+Formats all Lua files in the project using Stylua. This script:
+- Applies consistent code formatting
+- Uses the project's `.stylua.toml` configuration
+- Requires `stylua` to be installed via Homebrew
+
+### Linting
+```bash
+./bin/lint
+```
+Runs the linter on the Lua codebase. This script:
+- Checks for code style violations
+- Uses the project's `.stylua.toml` configuration
+- Requires `stylua` to be installed via Homebrew
+
+## Dependencies
+
+These scripts require the following tools to be installed:
+- `lua-language-server`: For type checking
+- `stylua`: For code formatting and linting
+
+Installation instructions:
+```bash
+brew install lua-language-server
+brew install stylua
+```
+
+## Usage in Development
+
+1. **Before Committing Changes**
+   ```bash
+   ./bin/format  # Format code
+   ./bin/check-types  # Check types
+   ./bin/lint  # Run linter
+   ```
+
+2. **Continuous Integration**
+   - These scripts should be run as part of CI/CD pipelines
+   - Failures should prevent merging of changes
+
+3. **Pre-commit Hooks**
+   - Consider adding these scripts to git pre-commit hooks
+   - This ensures code quality before commits
+
+## Best Practices
+
+1. **Running Scripts**
+   - Always run from the project root directory
+   - Use the full path to the scripts
+   - Check the exit code for success/failure
+
+2. **Script Maintenance**
+   - Keep scripts up to date with new dependencies
+   - Document any changes to script behavior
+   - Test scripts after updates
+
+3. **Error Handling**
+   - Scripts exit on error
+   - Provide clear error messages
+   - Include installation instructions
+
+## Adding New Scripts
+
+When adding new development scripts:
+1. Place them in the `bin/` directory
+2. Make them executable with `chmod +x`
+3. Document them in this file
+4. Include dependency checks
+5. Provide clear error messages
+
+## Common Issues
+
+1. **Missing Dependencies**
+   ```bash
+   Error: LuaLS is not installed. Please install it first:
+     brew install lua-language-server
+   ```
+
+2. **Permission Issues**
+   ```bash
+   chmod +x bin/script-name
+   ```
+
+3. **Wrong Directory**
+   - Always run scripts from project root
+   - Use `./bin/script-name` format 

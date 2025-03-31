@@ -1,0 +1,227 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Type Checking Guidelines
+
+This document outlines type checking practices for pointer.nvim using LuaLS and EmmyLua annotations.
+
+## Overview
+
+We use LuaLS (Lua Language Server) with EmmyLua annotations for type checking. This provides:
+- Static type checking
+- IntelliSense/autocomplete
+- Inline type hints
+- Type inference
+- Error detection
+
+## Type Annotations
+
+### Basic Types
+
+```lua
+--- @type string
+local name = "John"
+
+--- @type number
+local age = 25
+
+--- @type boolean
+local is_active = true
+
+--- @type table
+local data = {}
+
+--- @type function
+local callback = function() end
+```
+
+### Function Parameters and Return Types
+
+```lua
+--- Process user data
+--- @param name string User's name
+--- @param age number User's age
+--- @return boolean Whether the user is valid
+function process_user(name, age)
+  return age >= 18
+end
+```
+
+### Classes and Interfaces
+
+```lua
+--- @class User
+--- @field name string User's name
+--- @field age number User's age
+--- @field email? string Optional email address
+
+--- Create a new user
+--- @param props User User properties
+--- @return User
+function create_user(props)
+  return props
+end
+```
+
+### Generics
+
+```lua
+--- @generic T
+--- @class Container<T>
+--- @field value T The contained value
+
+--- @generic T
+--- @param items T[] List of items
+--- @return T First item
+function first(items)
+  return items[1]
+end
+```
+
+### Union Types
+
+```lua
+--- @alias Result<T> { success: true, value: T } | { success: false, error: string }
+
+--- @generic T
+--- @param value T
+--- @return Result<T>
+function wrap(value)
+  return { success = true, value = value }
+end
+```
+
+## Best Practices
+
+1. **Always Annotate Public APIs**
+   ```lua
+   -- ❌ Don't do this
+   function M.process(value)
+     return value
+   end
+
+   -- ✅ Do this
+   --- Process a value
+   --- @generic T
+   --- @param value T
+   --- @return T
+   function M.process(value)
+     return value
+   end
+   ```
+
+2. **Use Descriptive Types**
+   ```lua
+   -- ❌ Don't do this
+   --- @param data table
+
+   -- ✅ Do this
+   --- @param data { name: string, age: number }
+   ```
+
+3. **Document Optional Fields**
+   ```lua
+   -- ❌ Don't do this
+   --- @class Props
+   --- @field title string
+   --- @field description string
+
+   -- ✅ Do this
+   --- @class Props
+   --- @field title string
+   --- @field description? string Optional description
+   ```
+
+4. **Use Type Guards**
+   ```lua
+   --- @typeguard
+   --- @param value unknown
+   --- @return value is string
+   function is_string(value)
+     return type(value) == 'string'
+   end
+   ```
+
+## Common Patterns
+
+### Component Props
+```lua
+--- @class ComponentProps
+--- @field title string Component title
+--- @field align? 'left'|'center'|'right' Text alignment
+--- @field padding? number Padding size
+--- @field border? boolean Show border
+```
+
+### API Responses
+```lua
+--- @class ApiResponse<T>
+--- @field data T Response data
+--- @field status number HTTP status code
+--- @field message? string Optional message
+```
+
+### State Management
+```lua
+--- @class State<T>
+--- @field value T Current value
+--- @field history T[] Value history
+--- @field subscribers fun(value: T)[] State change subscribers
+```
+
+## IDE Support
+
+To get the best IDE support:
+1. Install LuaLS extension
+2. Configure `luarc.json`
+3. Enable type checking
+4. Use EmmyLua annotations
+
+## Common Pitfalls
+
+1. **Missing Type Annotations**
+   ```lua
+   -- ❌ Don't do this
+   function M.process(value)
+     return value
+   end
+
+   -- ✅ Do this
+   --- @generic T
+   --- @param value T
+   --- @return T
+   function M.process(value)
+     return value
+   end
+   ```
+
+2. **Incomplete Documentation**
+   ```lua
+   -- ❌ Don't do this
+   --- @param props table
+
+   -- ✅ Do this
+   --- @param props ComponentProps
+   ```
+
+3. **Unsafe Type Assertions**
+   ```lua
+   -- ❌ Don't do this
+   local value = some_value as string
+
+   -- ✅ Do this
+   if type(some_value) == 'string' then
+     local value = some_value
+   end
+   ```
+
+## Review Process
+
+When reviewing type annotations:
+1. Check completeness
+2. Verify type safety
+3. Look for edge cases
+4. Ensure documentation
+5. Validate generics 
