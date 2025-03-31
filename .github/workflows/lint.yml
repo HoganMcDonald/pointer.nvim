@@ -1,0 +1,26 @@
+name: Lint
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Install Stylua
+        run: |
+          curl -s https://api.github.com/repos/JohnnyMorganz/StyLua/releases/latest | \
+          grep "browser_download_url.*stylua-linux" | \
+          cut -d : -f 2,3 | \
+          tr -d \" | \
+          wget -qi -
+          chmod +x stylua-linux
+          sudo mv stylua-linux /usr/local/bin/stylua
+      
+      - name: Run Linting
+        run: ./bin/lint 

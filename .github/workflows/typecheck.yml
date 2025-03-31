@@ -1,0 +1,24 @@
+name: Type Check
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  typecheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Install LuaLS
+        run: npm install -g @luals/lua-language-server
+      
+      - name: Run Type Checking
+        run: ./bin/check-types 
