@@ -2,7 +2,7 @@ local M = {}
 
 local theme = require 'pointer.ui.theme'
 local ui = require 'pointer.ui'
-local views = require 'pointer.ui.views'
+local views = require 'pointer.views'
 
 local root_component = nil
 
@@ -204,7 +204,7 @@ function M.setup(opts)
   }
 
   -- Set up routes and default view
-  local routes = require 'pointer.ui.views.routes'
+  local routes = require 'pointer.config.routes'
   routes.register_views()
   routes.setup_default_view()
 

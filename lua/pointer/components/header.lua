@@ -16,9 +16,9 @@ function M.create(props)
   local component = ui.create_component(props, {})
 
   component.render = function(render_props)
-    local title = render_props.title or 'Pointer'
+    local title = render_props.title or ''
     local align = render_props.align or 'left'
-    local padding = render_props.padding or 1
+    local padding = render_props.padding or 0
     local show_border = render_props.border ~= false
 
     -- Calculate width from buffer if available

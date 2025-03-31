@@ -1,6 +1,6 @@
 --- Main view for the pointer sidepanel
-local header = require 'pointer.ui.components.header'
-local router = require 'pointer.ui.views.router'
+local header = require 'pointer.components.header'
+local router = require 'pointer.lib.router'
 local ui = require 'pointer.ui'
 
 local M = {}
@@ -55,24 +55,5 @@ function M.create(opts)
 
   return view
 end
-
---- Updates header title in the view
---- @param view table The view component to update
---- @param titles table Table with main_title field
-function M.update_titles(view, titles)
-  if not view or not view.children then
-    return
-  end
-
-  if titles.main_title and view.children.main_header then
-    view.children.main_header.props.title = titles.main_title
-  end
-end
-
--- Expose router functions
-M.navigate = router.navigate
-M.register = router.register
-M.get_current_view = router.get_current_view
-M.get_views = router.get_views
 
 return M

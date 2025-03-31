@@ -1,7 +1,7 @@
 local M = {}
 
 local config = require 'pointer.config'
-local sidepanel = require 'pointer.sidepanel'
+local sidepanel = require 'pointer.app'
 
 --- Setup function that initializes the plugin with options
 --- @param opts table|nil Configuration options for the plugin

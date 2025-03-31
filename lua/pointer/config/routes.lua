@@ -1,17 +1,17 @@
-local chat_view = require 'pointer.ui.views.chat'
-local views = require 'pointer.ui.views'
+local chat_view = require 'pointer.views.chat'
+local router = require 'pointer.lib.router'
 
 local M = {}
 
 --- Register all available views
 function M.register_views()
   -- Register chat view
-  views.register('chat', chat_view.create())
+  router.register('chat', chat_view.create())
 end
 
 --- Set up default view
 function M.setup_default_view()
-  views.navigate 'chat'
+  router.navigate 'chat'
 end
 
 --- Get all available routes
