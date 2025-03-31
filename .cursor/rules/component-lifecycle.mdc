@@ -1,4 +1,9 @@
-# Component Lifecycle and Structure
+---
+description: 
+globs: 
+alwaysApply: true
+---
+ # Component Lifecycle and Structure
 
 This document outlines the component lifecycle and structure in pointer.nvim.
 
@@ -239,4 +244,4 @@ To get the best IDE support:
 1. Use complete type annotations
 2. Document all lifecycle methods
 3. Define prop and state interfaces
-4. Use type guards for state updates 
+4. Use type guards for state updates
