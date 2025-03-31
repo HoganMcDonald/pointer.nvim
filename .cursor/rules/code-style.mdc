@@ -1,0 +1,244 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Code Style Guidelines
+
+This document outlines the code style guidelines for pointer.nvim and how to enforce them.
+
+## Overview
+
+We use Stylua for consistent code formatting across the project. The style rules are defined in `.stylua.toml` and should be followed for all new code.
+
+## Style Rules
+
+### Formatting
+
+1. **Indentation**
+   ```lua
+   -- ✅ Do this
+   function example()
+     local x = 1
+     if x > 0 then
+       print(x)
+     end
+   end
+
+   -- ❌ Don't do this
+   function example()
+       local x = 1
+         if x > 0 then
+             print(x)
+         end
+   end
+   ```
+
+2. **Line Length**
+   ```lua
+   -- ✅ Do this
+   local long_string = "This is a long string that fits within the 100 character limit"
+
+   -- ❌ Don't do this
+   local long_string = "This is a long string that exceeds the 100 character limit and makes the code harder to read"
+   ```
+
+3. **Quotes**
+   ```lua
+   -- ✅ Do this
+   local str = "double quotes"
+
+   -- ❌ Don't do this
+   local str = 'single quotes'
+   ```
+
+4. **Function Calls**
+   ```lua
+   -- ✅ Do this
+   local result = some_function()
+
+   -- ❌ Don't do this
+   local result = some_function
+   ```
+
+### Naming Conventions
+
+1. **Variables and Functions**
+   ```lua
+   -- ✅ Do this
+   local function process_data()
+     local user_input = get_input()
+     local processed_result = transform(user_input)
+   end
+
+   -- ❌ Don't do this
+   local function ProcessData()
+     local UserInput = getInput()
+     local processedResult = transform(UserInput)
+   end
+   ```
+
+2. **Constants**
+   ```lua
+   -- ✅ Do this
+   local MAX_RETRIES = 3
+   local DEFAULT_TIMEOUT = 5000
+
+   -- ❌ Don't do this
+   local maxRetries = 3
+   local default_timeout = 5000
+   ```
+
+### Code Organization
+
+1. **Imports**
+   ```lua
+   -- ✅ Do this
+   local ui = require "pointer.ui"
+   local utils = require "pointer.utils"
+
+   -- ❌ Don't do this
+   local ui = require("pointer.ui")
+   local utils = require("pointer.utils")
+   ```
+
+2. **Function Order**
+   ```lua
+   -- ✅ Do this
+   local M = {}
+
+   -- Public functions first
+   function M.create(props)
+     -- Implementation
+   end
+
+   -- Private functions last
+   local function helper()
+     -- Implementation
+   end
+
+   return M
+   ```
+
+3. **Spacing**
+   ```lua
+   -- ✅ Do this
+   if condition then
+     do_something()
+   end
+
+   for i = 1, 10 do
+     process(i)
+   end
+
+   -- ❌ Don't do this
+   if condition then
+     do_something()
+   end
+
+   for i=1,10 do
+     process(i)
+   end
+   ```
+
+## Automation
+
+### Running Stylua
+
+After making code changes, you should run Stylua to ensure consistent formatting:
+
+```bash
+stylua .
+```
+
+### Git Hooks
+
+Consider adding a pre-commit hook to automatically run Stylua:
+
+```bash
+#!/bin/sh
+stylua .
+```
+
+### CI/CD
+
+Include Stylua checks in your CI pipeline:
+
+```yaml
+steps:
+  - name: Check formatting
+    run: stylua --check .
+```
+
+## Best Practices
+
+1. **Documentation**
+   - Use LuaDoc comments for all public functions
+   - Include type annotations
+   - Document complex logic
+   - Keep comments up to date
+
+2. **Code Structure**
+   - Keep functions focused and small
+   - Use meaningful variable names
+   - Break complex logic into smaller functions
+   - Group related functionality
+
+3. **Error Handling**
+   - Use Result types for error handling
+   - Provide descriptive error messages
+   - Handle edge cases explicitly
+   - Log errors appropriately
+
+4. **Performance**
+   - Avoid unnecessary allocations
+   - Use appropriate data structures
+   - Cache expensive operations
+   - Profile performance-critical code
+
+## IDE Support
+
+To get the best IDE support for code style:
+
+1. Install the Stylua extension
+2. Enable format on save
+3. Set up your editor to use Stylua
+4. Configure your editor's line length to match Stylua
+
+## Common Pitfalls
+
+1. **Inconsistent Indentation**
+   ```lua
+   -- ❌ Don't do this
+   function example()
+   local x = 1
+     if x > 0 then
+       print(x)
+     end
+   end
+   ```
+
+2. **Missing Spaces**
+   ```lua
+   -- ❌ Don't do this
+   local x=1
+   if x>0 then
+     print(x)
+   end
+   ```
+
+3. **Inconsistent Quotes**
+   ```lua
+   -- ❌ Don't do this
+   local str1 = "double"
+   local str2 = 'single'
+   ```
+
+## Review Process
+
+When reviewing code:
+1. Check for style compliance
+2. Verify documentation
+3. Look for consistent patterns
+4. Ensure readability
+5. Validate error handling 
