@@ -170,54 +170,20 @@ function M.toggle()
   end
 end
 
---- Updates the sidepanel headers with new titles
---- @param titles table Table with main_title, section1_title, and section2_title fields
-function M.update_headers(titles)
-  if not root_component then return end
-
-  -- Update the view's headers
-  views.update_titles(root_component, titles)
-
-  -- Re-render if the sidepanel is visible
-  if sidepanel.buffer_id and vim.api.nvim_buf_is_valid(sidepanel.buffer_id) then
-    ui.render_component(root_component, sidepanel.buffer_id)
-  end
-end
-
---- Default options for the sidepanel.
---- @type table
---- @field width number Width of the sidepanel in columns
---- @field position string Position of the sidepanel ('left' or 'right')
-M.options = {
-  width = 40,
-  position = "right", -- 'left' or 'right'
-}
-
 --- Initializes the sidepanel with options.
---- @param opts table|nil Optional table of user options to override defaults
+--- @param opts PointerOptions|table|nil Optional table of user options to override defaults
 function M.setup(opts)
-  -- Update options
-  if opts then M.options = vim.tbl_deep_extend("force", M.options, opts) end
-
-  -- Create sidepanel highlights
   create_sidepanel_highlights()
 
-  -- Additional theme setup for UI components
   theme.setup_highlights()
   theme.setup_theme_autocmds()
 
-  -- Extract view options from main options
-  local view_opts = opts and opts.view or {}
-
-  -- Create root component with single header
   root_component = views.create({
-    width = M.options.width,
+    width = opts.width,
   })
 
-  -- Make root_component accessible after initialization
   M.root_component = root_component
 
-  -- Set up routes and default view
   local routes = require("pointer.config.routes")
   routes.register_views()
   routes.setup_default_view()
