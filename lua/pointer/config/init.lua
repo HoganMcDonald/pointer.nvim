@@ -1,17 +1,31 @@
 local M = {}
+local schema = require("pointer.lib.schema")
 
--- Default options
+-- Define schema for PointerOptions
+local optionsSchema = schema.object({
+  width = schema.number(),
+  position = schema.enum({ "left", "right" }),
+})
+
+--- Default options for the sidepanel.
+--- @class PointerOptions
+--- @field width number Width of the sidepanel in columns
+--- @field position string Position of the sidepanel ('left' or 'right')
 M.defaults = {
-  width = 40,
+  width = 60,
   position = "right", -- 'left' or 'right'
 }
 
--- Current options
 M.options = vim.deepcopy(M.defaults)
 
--- Setup function to merge user options with defaults
+--- Setup function to merge user options with defaults
+--- @param opts table|nil Optional table of user options to override defaults
 function M.setup(opts)
-  M.options = vim.tbl_deep_extend("force", M.defaults, opts or {})
+  opts = opts or {}
+
+  schema.parse(optionsSchema, opts)
+
+  M.options = vim.tbl_deep_extend("force", M.defaults, opts)
   return M.options
 end
 

@@ -15,22 +15,6 @@ local M = {}
 ---@field optional fun(self: Schema): Schema Make this schema optional
 ---@field validate fun(self: Schema, value: any, path?: string): SchemaValidationResult Validate a value against this schema
 
--- Local deep copy function that doesn't rely on vim
-local function deep_copy(orig)
-  local orig_type = type(orig)
-  local copy
-  if orig_type == 'table' then
-    copy = {}
-    for orig_key, orig_value in next, orig, nil do
-      copy[deep_copy(orig_key)] = deep_copy(orig_value)
-    end
-    setmetatable(copy, deep_copy(getmetatable(orig)))
-  else
-    copy = orig
-  end
-  return copy
-end
-
 --- Create base schema type
 ---@generic T: Schema
 ---@param type_name string The name of the schema type
@@ -45,7 +29,7 @@ local function new_schema(type_name)
   ---@generic T: Schema
   ---@return T The optional schema
   function schema:optional()
-    local new = deep_copy(self)
+    local new = vim.deepcopy(self)
     new._optional = true
     return new
   end
