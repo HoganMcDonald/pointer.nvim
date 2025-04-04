@@ -11,10 +11,8 @@ local M = {}
 function M.create(opts)
   opts = opts or {}
 
-  -- Create the parent component that holds the entire view
-  local view = ui.create_component(opts)
+  local view = ui.create_component(opts, {})
 
-  -- Create a single header component
   local main_header = header.create({
     title = "Pointer.nvim",
     align = "center",
@@ -22,26 +20,18 @@ function M.create(opts)
     border = true,
   })
 
-  -- Store child components so they can be accessed later
   view.children = {
     main_header = main_header,
   }
 
-  -- Define the render function for the view
-  view.render = function(props, state)
-    -- Calculate width from buffer if available
-    local width = props.width or 40
-
-    -- Start with empty content array
+  view.render = function(_, _)
     local content = {}
 
-    -- Render the main header
     local main_header_content = main_header.render(main_header.props, main_header.state)
     for _, line in ipairs(main_header_content) do
       table.insert(content, line)
     end
 
-    -- Render the current view if one is active
     local current_view = router.get_current_view()
     if current_view then
       local view_content =

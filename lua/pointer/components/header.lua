@@ -1,6 +1,9 @@
-local ui = require("pointer.ui")
-
 local M = {}
+
+local ui = require("pointer.ui")
+local config = require("pointer.config")
+
+M.options = config.options
 
 --- @class HeaderProps
 --- @field title string
@@ -22,7 +25,7 @@ function M.create(props)
     local show_border = render_props.border ~= false
 
     -- Calculate width from buffer if available
-    local width = 40
+    local width = M.options.width
     if component.bufnr and vim.api.nvim_buf_is_valid(component.bufnr) then
       local win_id = vim.fn.bufwinid(component.bufnr)
       if win_id ~= -1 then width = vim.api.nvim_win_get_width(win_id) end

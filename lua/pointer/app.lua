@@ -3,6 +3,9 @@ local M = {}
 local theme = require("pointer.ui.theme")
 local ui = require("pointer.ui")
 local views = require("pointer.views")
+local config = require("pointer.config")
+
+M.options = config.options
 
 --- Stores sidepanel state.
 --- @type table

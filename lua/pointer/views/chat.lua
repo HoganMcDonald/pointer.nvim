@@ -16,8 +16,7 @@ function M.create(opts)
     border = false,
   })
 
-  -- Override the render function
-  view.render = function(props, state)
+  view.render = function(_, _)
     local content = {}
 
     -- Render the header

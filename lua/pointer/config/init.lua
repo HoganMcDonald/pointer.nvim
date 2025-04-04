@@ -23,9 +23,9 @@ M.options = vim.deepcopy(M.defaults)
 function M.setup(opts)
   opts = opts or {}
 
-  schema.parse(optionsSchema, opts)
-
   M.options = vim.tbl_deep_extend("force", M.defaults, opts)
+  schema.parse(optionsSchema, M.options)
+
   return M.options
 end
 
