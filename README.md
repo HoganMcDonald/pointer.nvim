@@ -9,6 +9,7 @@
   - [License](#license)
 <!--toc:end-->
 
+![Tests](https://github.com/hoganmcdonald/pointer.nvim/actions/workflows/test.yml/badge.svg)
 ![Lint](https://github.com/hoganmcdonald/pointer.nvim/actions/workflows/lint.yml/badge.svg)
 ![Type Check](https://github.com/hoganmcdonald/pointer.nvim/actions/workflows/typecheck.yml/badge.svg)
 
