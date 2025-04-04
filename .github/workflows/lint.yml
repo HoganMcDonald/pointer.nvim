@@ -11,16 +11,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Install Stylua
         run: |
-          curl -s https://api.github.com/repos/JohnnyMorganz/StyLua/releases/latest | \
-          grep "browser_download_url.*stylua-linux" | \
-          cut -d : -f 2,3 | \
-          tr -d \" | \
-          wget -qi -
-          chmod +x stylua-linux
-          sudo mv stylua-linux /usr/local/bin/stylua
-      
+          # Get latest version
+          VERSION=$(curl -s https://api.github.com/repos/JohnnyMorganz/StyLua/releases/latest | grep -o '"tag_name": "[^"]*' | cut -d'"' -f4)
+
+          # Download the Linux binary
+          echo "Downloading StyLua version ${VERSION}..."
+          curl -sL "https://github.com/JohnnyMorganz/StyLua/releases/download/${VERSION}/stylua-linux-x86_64.zip" -o stylua.zip
+
+          # Extract and install
+          unzip stylua.zip
+          chmod +x stylua
+          sudo mv stylua /usr/local/bin/stylua
+
       - name: Run Linting
-        run: ./bin/lint 
+        run: make lint
