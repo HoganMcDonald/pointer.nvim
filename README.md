@@ -1,5 +1,9 @@
 # pointer.nvim
 
+![Tests](https://github.com/hoganmcdonald/pointer.nvim/actions/workflows/test.yml/badge.svg)
+![Lint](https://github.com/hoganmcdonald/pointer.nvim/actions/workflows/lint.yml/badge.svg)
+![Type Check](https://github.com/hoganmcdonald/pointer.nvim/actions/workflows/typecheck.yml/badge.svg)
+
 <!--toc:start-->
 - [pointer.nvim](#pointernvim)
   - [Development](#development)
@@ -8,9 +12,6 @@
   - [Contributing](#contributing)
   - [License](#license)
 <!--toc:end-->
-
-![Lint](https://github.com/hoganmcdonald/pointer.nvim/actions/workflows/lint.yml/badge.svg)
-![Type Check](https://github.com/hoganmcdonald/pointer.nvim/actions/workflows/typecheck.yml/badge.svg)
 
 AI tools for neovim.
 
